@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CocoaPatterns Blog — Practical iOS & Mac Development Since 2009</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;0,900;1,400&family=Source+Code+Pro:wght@400;600&family=Oswald:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #f5f0e8;
+    --text: #2a2118;
+    --accent: #c0392b;
+    --accent2: #922b21;
+    --muted: #7a6a58;
+    --border: #d0c4b0;
+    --code-bg: #1e1a14;
+    --code-text: #e8dcc8;
+    --highlight: #f39c12;
+    --link: #1a5276;
+    --white: #fff;
+    --fiction-bg: #1a1a2e;
+    --fiction-accent: #9b59b6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.85;
+  }
+
+  /* ---- HEADER ---- */
+  .site-bar {
+    background: var(--text);
+    color: #aaa;
+    padding: 8px 24px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .site-bar a { color: #aaa; text-decoration: none; }
+  .site-bar a:hover { color: white; }
+
+  .blog-masthead {
+    background: var(--accent);
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 4px solid var(--accent2);
+    cursor: pointer;
+  }
+
+  .blog-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.25);
+  }
+
+  .blog-tagline {
+    font-size: 13px;
+    opacity: 0.85;
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  .masthead-right {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    text-align: right;
+    opacity: 0.8;
+    line-height: 1.6;
+  }
+
+  .nav-bar {
+    background: #2a2118;
+    padding: 0 40px;
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+
+  .nav-bar a {
+    color: #ccc;
+    text-decoration: none;
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 10px 18px;
+    display: block;
+    transition: background 0.15s, color 0.15s;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .nav-bar a:hover, .nav-bar a.active { background: var(--accent); color: white; }
+
+  /* ---- INDEX PAGE ---- */
+  #index-page { display: block; }
+  #post-page { display: none; }
+
+  .index-container {
+    max-width: 1060px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 290px;
+    gap: 44px;
+    padding: 44px 24px;
+  }
+
+  .featured-post {
+    background: var(--white);
+    border: 2px solid var(--border);
+    padding: 32px;
+    margin-bottom: 32px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    position: relative;
+  }
+
+  .featured-post::before {
+    content: "FEATURED";
+    position: absolute;
+    top: -2px;
+    right: 24px;
+    background: var(--highlight);
+    color: var(--text);
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+  }
+
+  .featured-post:hover { border-color: var(--accent); }
+
+  .post-card {
+    border-bottom: 2px solid var(--border);
+    padding: 24px 0;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: start;
+    transition: background 0.1s;
+  }
+
+  .post-card:hover .card-title { color: var(--accent); }
+
+  .card-meta {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .cat-badge {
+    background: var(--accent);
+    color: white;
+    padding: 2px 8px;
+    font-size: 10px;
+  }
+
+  .cat-badge.fiction { background: var(--fiction-accent); }
+  .cat-badge.database { background: #1a5276; }
+  .cat-badge.backend { background: #1e8449; }
+  .cat-badge.distribution { background: #935116; }
+  .cat-badge.debugging { background: #515a5a; }
+  .cat-badge.personal { background: #7d6608; }
+  .cat-badge.engineering { background: #1b2631; }
+
+  .card-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 8px;
+    transition: color 0.15s;
+  }
+
+  .card-excerpt {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .card-readmore {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-top: 4px;
+  }
+
+  /* ---- SIDEBAR ---- */
+  .sidebar-widget {
+    border: 2px solid var(--border);
+    margin-bottom: 28px;
+    background: var(--white);
+  }
+
+  .sidebar-widget-title {
+    background: var(--text);
+    color: var(--bg);
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 9px 14px;
+  }
+
+  .sidebar-widget-body { padding: 14px; }
+
+  .sidebar-widget ul { list-style: none; padding: 0; }
+
+  .sidebar-widget li {
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--link);
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .sidebar-widget li:hover { color: var(--accent); }
+  .sidebar-widget li:last-child { border: none; }
+
+  .tag-cloud { line-height: 2; }
+  .tag-cloud a {
+    display: inline-block;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 3px 10px;
+    margin: 2px 2px;
+    font-size: 11px;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 1px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+  }
+  .tag-cloud a:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .comment-count {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    padding: 1px 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .newsletter-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border);
+    font-family: 'Merriweather', serif;
+    font-size: 13px;
+    margin-bottom: 8px;
+    background: var(--bg);
+  }
+
+  .newsletter-btn {
+    width: 100%;
+    padding: 9px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 1.5px;
+    font-size: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.15s;
+  }
+  .newsletter-btn:hover { background: var(--accent2); }
+
+  /* ---- SINGLE POST PAGE ---- */
+  .post-container {
+    max-width: 1060px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 290px;
+    gap: 44px;
+    padding: 44px 24px;
+  }
+
+  .post-meta-line {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .post-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 42px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .post-subtitle {
+    font-size: 19px;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 28px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .fiction-mode .post-title,
+  .fiction-mode .post-subtitle { color: #e8e0f0; }
+
+  .author-strip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 36px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .author-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg);
+    font-family: 'Oswald', sans-serif;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  .author-name { font-weight: 700; color: var(--text); font-size: 14px; }
+
+  /* Post body styles */
+  .post-body h2 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 27px;
+    margin: 44px 0 18px;
+    color: var(--text);
+    border-left: 4px solid var(--accent);
+    padding-left: 14px;
+    line-height: 1.2;
+  }
+
+  .post-body h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    margin: 30px 0 12px;
+    color: var(--text);
+  }
+
+  .post-body p { margin-bottom: 22px; }
+
+  .post-body a { color: var(--link); }
+
+  .post-body ul, .post-body ol {
+    margin: 0 0 22px 28px;
+  }
+
+  .post-body li { margin-bottom: 8px; }
+
+  .post-body hr {
+    border: none;
+    border-top: 2px solid var(--border);
+    margin: 28px 0;
+  }
+
+  blockquote {
+    border-left: 5px solid var(--accent);
+    margin: 36px 0;
+    padding: 18px 28px;
+    background: var(--white);
+    font-size: 20px;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.55;
+  }
+
+  .callout {
+    border: 2px solid var(--border);
+    background: var(--white);
+    padding: 20px 26px;
+    margin: 30px 0;
+    position: relative;
+  }
+
+  .callout-label {
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    background: var(--highlight);
+    color: var(--text);
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 2px 12px;
+    text-transform: uppercase;
+  }
+
+  .callout.danger { border-color: var(--accent); }
+  .callout.danger .callout-label { background: var(--accent); color: white; }
+
+  .callout p { margin: 0; font-size: 15px; }
+  .callout ul { margin: 8px 0 0 18px; }
+  .callout li { font-size: 15px; margin-bottom: 6px; }
+
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 22px 26px;
+    margin: 28px 0;
+    overflow-x: auto;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 13px;
+    line-height: 1.75;
+    border-left: 4px solid var(--accent);
+    position: relative;
+  }
+
+  pre::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 8px;
+    right: 14px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #555;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .kw { color: #c678dd; }
+  .type { color: #e5c07b; }
+  .str { color: #98c379; }
+  .cm { color: #5c6370; font-style: italic; }
+  .fn { color: #61afef; }
+  .num { color: #d19a66; }
+
+  code {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 13px;
+    background: #e8e0d0;
+    padding: 2px 6px;
+    border-radius: 2px;
+    color: #922b21;
+  }
+
+  /* Fiction mode */
+  .fiction-mode {
+    background: var(--fiction-bg) !important;
+    color: #d4c8e0 !important;
+  }
+
+  .fiction-mode .post-body { color: #d4c8e0; }
+  .fiction-mode .post-body p { color: #c8bcd8; }
+  .fiction-mode .post-body h2 { border-color: var(--fiction-accent); color: #d4c8e0; }
+  .fiction-mode .callout { background: #16213e; border-color: var(--fiction-accent); }
+  .fiction-mode .callout-label { background: var(--fiction-accent); color: white; }
+  .fiction-mode blockquote { background: #16213e; border-color: var(--fiction-accent); color: #d4c8e0; }
+  .fiction-mode .author-name { color: #d4c8e0; }
+  .fiction-mode .post-meta-line { color: #9b8ab0; }
+
+  /* Share / back */
+  .share-row {
+    display: flex;
+    gap: 10px;
+    margin: 36px 0 0;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .share-btn {
+    padding: 8px 20px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    color: white;
+    transition: opacity 0.15s;
+  }
+  .share-btn:hover { opacity: 0.85; }
+  .share-btn.twitter { background: #1da1f2; }
+  .share-btn.hackernews { background: #ff6600; }
+  .share-btn.reddit { background: #ff4500; }
+
+  .back-btn {
+    padding: 8px 20px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 2px solid var(--border);
+    background: none;
+    cursor: pointer;
+    color: var(--muted);
+    margin-right: auto;
+    transition: all 0.15s;
+  }
+  .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Comments */
+  .comments-section {
+    margin-top: 48px;
+    border-top: 3px solid var(--border);
+    padding-top: 36px;
+  }
+
+  .comments-heading {
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  .comment {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 26px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .comment:last-child { border: none; }
+
+  .comment-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 17px;
+    color: white;
+  }
+
+  .comment-meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0.5px;
+  }
+
+  .comment-meta strong { color: var(--text); font-size: 14px; }
+
+  .author-tag {
+    background: var(--accent);
+    color: white;
+    font-size: 9px;
+    padding: 1px 6px;
+    letter-spacing: 1px;
+    margin-left: 6px;
+    text-transform: uppercase;
+  }
+
+  .comment-body { font-size: 14px; line-height: 1.7; color: var(--text); }
+
+  .fiction-mode .comment-meta { color: #9b8ab0; }
+  .fiction-mode .comment-meta strong { color: #d4c8e0; }
+  .fiction-mode .comment-body { color: #c8bcd8; }
+  .fiction-mode .comments-section { border-color: #2d2050; }
+  .fiction-mode .comment { border-color: #2d2050; }
+  .fiction-mode .comments-heading { color: #9b8ab0; }
+
+  /* Pagination on index */
+  .pagination {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    padding: 24px 0 0;
+  }
+
+  .page-btn {
+    width: 36px;
+    height: 36px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    border: 2px solid var(--border);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .page-btn:hover, .page-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  /* Category filter */
+  .category-filter {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .filter-btn {
+    padding: 5px 14px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 2px solid var(--border);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--muted);
+  }
+  .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); background: var(--bg); }
+
+  /* Footer */
+  footer {
+    background: var(--text);
+    color: #666;
+    text-align: center;
+    padding: 28px 24px;
+    font-size: 12px;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 1px;
+    margin-top: 60px;
+    line-height: 2;
+  }
+
+  footer a { color: #888; text-decoration: none; }
+  footer a:hover { color: white; }
+
+  @media (max-width: 720px) {
+    .index-container, .post-container { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .post-title { font-size: 28px; }
+    .blog-masthead { padding: 16px 20px; }
+    .nav-bar { padding: 0 10px; }
+    .blog-name { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="site-bar">
+  <span>🍫 CocoaPatterns — iOS & Mac Development Since 2009</span>
+  <span>RSS · <a href="#">Twitter</a> · <a href="#">GitHub</a></span>
+</div>
+
+<div class="blog-masthead" onclick="showIndex()">
+  <div>
+    <div class="blog-name">🍫 CocoaPatterns</div>
+    <div class="blog-tagline">Because someone has to write this stuff down</div>
+  </div>
+  <div class="masthead-right">
+    "We ship apps.<br>Sometimes they even work."
+  </div>
+</div>
+
+<nav class="nav-bar" id="main-nav">
+  <a onclick="showIndex()" class="active" data-cat="all">All Posts</a>
+  <a onclick="filterCat('Architecture')">Architecture</a>
+  <a onclick="filterCat('Process')">Process</a>
+  <a onclick="filterCat('Database')">Database</a>
+  <a onclick="filterCat('Backend')">Backend</a>
+  <a onclick="filterCat('Personal')">Personal</a>
+  <a onclick="filterCat('Fiction')">The Twilight Zone</a>
+  <a onclick="filterCat('Engineering')">Engineering</a>
+  <a onclick="filterCat('Debugging')">Debugging</a>
+</nav>
+
+<!-- INDEX PAGE -->
+<div id="index-page">
+  <div class="index-container">
+    <main>
+      <div id="posts-list"></div>
+      <div class="pagination" id="pagination"></div>
+    </main>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-widget">
+        <div class="sidebar-widget-title">About CocoaPatterns</div>
+        <div class="sidebar-widget-body">
+          <p style="font-size:13px; margin-bottom:10px">Written by iOS and Mac developers who have seen things. Mostly things that should not have been done but were done anyway, in production, on a Friday.</p>
+          <p style="font-size:12px; color:var(--muted)">CocoaPatterns accepts no responsibility for code you write after reading these posts.</p>
+        </div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="sidebar-widget-title">Popular Posts</div>
+        <div class="sidebar-widget-body">
+          <ul id="popular-posts"></ul>
+        </div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="sidebar-widget-title">Tags</div>
+        <div class="sidebar-widget-body tag-cloud" id="tag-cloud"></div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="sidebar-widget-title">Newsletter</div>
+        <div class="sidebar-widget-body">
+          <p style="font-size:13px; margin-bottom:12px">Get posts about bad ideas delivered directly to your inbox.</p>
+          <input class="newsletter-input" type="email" placeholder="your@email.com">
+          <button class="newsletter-btn">Subscribe</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- SINGLE POST PAGE -->
+<div id="post-page">
+  <div class="post-container" id="post-container">
+    <article id="post-content"></article>
+    <aside class="sidebar" id="post-sidebar">
+      <div class="sidebar-widget">
+        <div class="sidebar-widget-title">More Posts</div>
+        <div class="sidebar-widget-body">
+          <ul id="related-posts"></ul>
+        </div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="sidebar-widget-title">Tags</div>
+        <div class="sidebar-widget-body tag-cloud" id="post-tag-cloud"></div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="sidebar-widget-title">Newsletter</div>
+        <div class="sidebar-widget-body">
+          <p style="font-size:13px; margin-bottom:12px">More bad ideas in your inbox.</p>
+          <input class="newsletter-input" type="email" placeholder="your@email.com">
+          <button class="newsletter-btn">Subscribe</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<footer>
+  © 2009–2015 CocoaPatterns · Built with Octopress · Hosted on GitHub Pages<br>
+  Deployed via a shell script Brad wrote at 2am that "should be fine"<br>
+  <a href="#">Privacy Policy</a> · <a href="#">RSS Feed</a> · <a href="#">Contact</a>
+</footer>
+
+<script>
+// ---- POSTS DATA ----
+
+const POSTS = [
+  {
+    id: "swizzle-driven-development",
+    title: "Swizzle-Driven Development: The Objective-C Architecture Pattern You Didn't Know You Needed",
+    subtitle: "Move over MVC, MVVM, and VIPER. The future of iOS architecture is already baked into the runtime.",
+    category: "Architecture",
+    date: "September 4, 2014",
+    author: "Brad Kowalski",
+    authorHandle: "@bradkow_ios",
+    authorInitials: "BK",
+    authorColor: "#1a5276",
+    readTime: "14 min",
+    tags: ["objective-c", "runtime", "architecture", "swizzling", "bad-ideas"],
+    body: `
+<p>I've been writing Objective-C since the iPhone OS 2.1 days. I've watched the community swing from MVC to MVVM, flirt with ReactiveCocoa, and now apparently everyone is in love with something called VIPER which, as far as I can tell, is just MVC but with more files and a cooler name.</p>
+<p>But today I want to talk about something different. Something that's been hiding in plain sight since NeXT workstations were cool. Something the Objective-C runtime has given us all along that we've been criminally underusing as an architectural foundation.</p>
+<p>I'm talking about <strong>Swizzle-Driven Development</strong>, or <strong>SDD</strong>.</p>
+<blockquote>"If you're not swizzling, you're not really doing Objective-C. You're just writing Java with square brackets."</blockquote>
+<h2>What Is Swizzle-Driven Development?</h2>
+<p>The core thesis is simple: <strong>the best architecture is one where you never have to change the original code</strong>. Instead, you intercept, augment, and replace behavior at runtime using method swizzling. Think of it as aspect-oriented programming, but instead of build-time weaving, you do it at <code>+load</code> time. Dynamically. In production.</p>
+<p>The key insight is that in SDD, your <em>entire application logic layer</em> lives in categories full of swizzled methods. Your original classes remain pristine. Untouched. The business logic simply... wraps around them like a loving, imperceptible embrace.</p>
+<div class="callout">
+  <span class="callout-label">💡 Key Principle</span>
+  <p>In SDD, the golden rule is: <strong>touch nothing, change everything.</strong> Every behavior modification flows through the runtime, not the source. Your original source files become sacred artifacts, read-only monuments to your original intent.</p>
+</div>
+<h2>The Core Building Block</h2>
+<p>Drop this in a category on <code>NSObject</code> — yes, <code>NSObject</code>, why would you put it anywhere else — and you're off to the races:</p>
+<pre data-lang="Objective-C"><span class="kw">@implementation</span> <span class="type">NSObject</span> (SDD)
++ (<span class="type">void</span>)<span class="fn">swizzleMethod</span>:(<span class="type">SEL</span>)original <span class="fn">withMethod</span>:(<span class="type">SEL</span>)swizzled {
+    <span class="type">Method</span> originalMethod = <span class="fn">class_getInstanceMethod</span>(<span class="kw">self</span>, original);
+    <span class="type">Method</span> swizzledMethod = <span class="fn">class_getInstanceMethod</span>(<span class="kw">self</span>, swizzled);
+    <span class="cm">// This is fine. This is always fine.</span>
+    <span class="fn">method_exchangeImplementations</span>(originalMethod, swizzledMethod);
+}
+<span class="kw">@end</span></pre>
+<p>Beautiful. Now let's build an architecture on top of it.</p>
+<h2>The SDD Application Layer</h2>
+<p>In traditional MVC, your view controllers become massive 3,000-line behemoths. In SDD, there are no bloated view controllers. There's just <code>+load</code>.</p>
+<pre data-lang="Objective-C"><span class="kw">@implementation</span> <span class="type">UserProfileViewController</span> (SDD)
++ (<span class="type">void</span>)<span class="fn">load</span> {
+    <span class="kw">static</span> <span class="fn">dispatch_once_t</span> onceToken;
+    <span class="fn">dispatch_once</span>(&amp;onceToken, ^{
+        [<span class="kw">self</span> <span class="fn">swizzleMethod</span>:<span class="kw">@selector</span>(<span class="fn">viewDidLoad</span>)
+             <span class="fn">withMethod</span>:<span class="kw">@selector</span>(<span class="fn">sdd_viewDidLoad</span>)];
+        [<span class="kw">self</span> <span class="fn">swizzleMethod</span>:<span class="kw">@selector</span>(<span class="fn">purchaseButtonTapped:</span>)
+             <span class="fn">withMethod</span>:<span class="kw">@selector</span>(<span class="fn">sdd_purchaseButtonTapped:</span>)];
+        <span class="cm">// Swizzle dealloc for memory tracking</span>
+        <span class="cm">// (This is controversial but I stand by it)</span>
+        [<span class="kw">self</span> <span class="fn">swizzleMethod</span>:<span class="kw">@selector</span>(<span class="fn">dealloc</span>)
+             <span class="fn">withMethod</span>:<span class="kw">@selector</span>(<span class="fn">sdd_dealloc</span>)];
+    });
+}
+- (<span class="type">void</span>)<span class="fn">sdd_viewDidLoad</span> {
+    [<span class="kw">self</span> <span class="fn">sdd_viewDidLoad</span>]; <span class="cm">// This calls the original. Trust me.</span>
+    [[<span class="type">SDDAnalyticsEngine</span> <span class="fn">sharedEngine</span>] <span class="fn">trackScreen</span>:<span class="str">@"UserProfile"</span>];
+}
+<span class="cm">// ... 847 more lines ...</span>
+<span class="kw">@end</span></pre>
+<div class="callout danger">
+  <span class="callout-label">⚠️ Common Gotcha</span>
+  <p>New SDD practitioners are often confused by the recursive-looking call <code>[self sdd_viewDidLoad]</code> inside <code>sdd_viewDidLoad</code>. Don't worry — because of the swizzle, this actually calls the <em>original</em> <code>viewDidLoad</code>. This is not confusing at all once you fully internalize how swizzling works. It took me about six weeks.</p>
+</div>
+<h2>Real-World Results</h2>
+<ul>
+  <li>Original source files: <strong>100% unchanged</strong> ✅</li>
+  <li>New SDD category files added: <strong>847</strong></li>
+  <li>Total swizzle invocations at app launch: <strong>~2,300</strong></li>
+  <li>Onboarding time for new engineers: <strong>we stopped hiring</strong></li>
+  <li>Senior engineers who quit: <strong>not confirmed to be related</strong></li>
+</ul>
+<p>Now if you'll excuse me, I need to go swizzle <code>UIApplication</code>'s <code>sendEvent:</code> to fix a bug that I introduced by swizzling <code>UIApplication</code>'s <code>sendEvent:</code>.</p>`,
+    comments: [
+      { initials: "JH", color: "#2980b9", name: "jharrington_dev", time: "2 days ago", text: "This is either genius or the most irresponsible thing I've read on this blog, and I'm including the Core Data encryption post from 2012." },
+      { initials: "BK", color: "#27ae60", name: "bradkow_ios", isAuthor: true, time: "2 days ago", text: "@jharrington_dev I'll accept genius. We've had this in production for three months with zero confirmed SDD-related outages." },
+      { initials: "MV", color: "#8e44ad", name: "mvermeer", time: "1 day ago", text: "I showed this to my team and two of them sent me the Wikipedia article for 'technical debt' without comment." },
+      { initials: "DL", color: "#c0392b", name: "DaveLorimer_iOS", time: "18 hours ago", text: "Brad, I am the Dave who left. I left because of this." },
+      { initials: "BK", color: "#27ae60", name: "bradkow_ios", isAuthor: true, time: "17 hours ago", text: "@DaveLorimer_iOS Hey Dave. Hope you're doing well. The link order on the payment module is still your fault btw" },
+    ]
+  },
+  {
+    id: "appdelegate-driven-development",
+    title: "AppDelegate-Driven Development: One File to Rule Them All",
+    subtitle: "Why distribute logic across dozens of files when one beautiful god-object can hold everything?",
+    category: "Architecture",
+    date: "October 2, 2014",
+    author: "Brad Kowalski",
+    authorHandle: "@bradkow_ios",
+    authorInitials: "BK",
+    authorColor: "#1a5276",
+    readTime: "9 min",
+    tags: ["objective-c", "architecture", "appdelegate", "god-objects"],
+    body: `
+<p>In the beginning, Apple gave us <code>AppDelegate</code>. And Apple saw that it was good. Then the community spent the next five years telling you to move everything <em>out</em> of it, into coordinators, routers, service layers, and dependency graphs that require a separate diagram just to understand.</p>
+<p>I'm here to tell you: they were wrong. The AppDelegate is not a problem to be solved. It is a <em>destination</em>.</p>
+<blockquote>"The AppDelegate is the beating heart of your application. Feed it. Nurture it. Let it grow."</blockquote>
+<h2>The Philosophy of ADD</h2>
+<p>AppDelegate-Driven Development (ADD — yes, the acronym is intentional and I think it's appropriate) asks a simple question: <em>where does code live?</em> In traditional MVC, the answer is "in lots of places, good luck." In ADD, the answer is <code>AppDelegate.m</code>. Always. Forever.</p>
+<p>Core Data stack? AppDelegate. Networking layer? AppDelegate. Push notification handling, deep linking, audio session management, analytics initialization, in-app purchase receipt validation? AppDelegate, AppDelegate, AppDelegate, AppDelegate, AppDelegate, and AppDelegate.</p>
+<div class="callout">
+  <span class="callout-label">💡 ADD Principle #1</span>
+  <p>If you can't find it in the AppDelegate, it doesn't exist. This is a feature. This is called <strong>discoverability</strong>.</p>
+</div>
+<h2>Our AppDelegate.m by the Numbers</h2>
+<ul>
+  <li>Lines of code: <strong>14,229</strong></li>
+  <li>Methods: <strong>847</strong></li>
+  <li>Private properties: <strong>203</strong></li>
+  <li>Compile time: <strong>please don't ask</strong></li>
+  <li>Engineers who understand all of it: <strong>0</strong> (I wrote most of it and I don't understand it)</li>
+</ul>
+<h2>What About main.m?</h2>
+<p>Advanced practitioners have begun migrating certain low-level concerns directly into <code>main.m</code>, before <code>UIApplicationMain</code> is even called. Database migrations. Feature flag bootstrapping. One colleague has his entire authentication flow running in <code>main.m</code> "for performance reasons." He says it's "pre-warming the auth state." I say it's a cry for help, but the app is fast so who's to judge.</p>
+<pre data-lang="Objective-C"><span class="kw">int</span> <span class="fn">main</span>(<span class="kw">int</span> argc, <span class="kw">char</span> * argv[]) {
+    <span class="cm">// Sync database migrations before UIKit even knows we exist</span>
+    [[<span class="type">MigrationEngine</span> <span class="fn">shared</span>] <span class="fn">runAllMigrationsOrDie</span>];
+    <span class="cm">// This blocks the main thread. The main thread isn't running yet. It's fine.</span>
+    <span class="fn">dispatch_sync</span>(<span class="fn">dispatch_get_main_queue</span>(), ^{ <span class="cm">/* bold strategy */</span> });
+    <span class="kw">return</span> <span class="fn">UIApplicationMain</span>(argc, argv, <span class="kw">nil</span>, <span class="str">@"AppDelegate"</span>);
+}</pre>
+<p>Our app launches in under four seconds on an iPhone 5. Not four seconds after the splash screen — four seconds after you plug it in. We are not taking questions.</p>`,
+    comments: [
+      { initials: "SK", color: "#8e44ad", name: "santiagok_mob", time: "1 day ago", text: "14,229 lines. I feel seen. Ours is 11k and everyone acts like I personally wronged them." },
+      { initials: "BK", color: "#27ae60", name: "bradkow_ios", isAuthor: true, time: "1 day ago", text: "@santiagok_mob 11k is just getting started. Stay the course." },
+      { initials: "RN", color: "#e67e22", name: "r_narayanan_dev", time: "20 hours ago", text: "\"The main thread isn't running yet. It's fine.\" I need this on a poster." },
+    ]
+  },
+  {
+    id: "push-notification-binaries",
+    title: "Ship App Binaries via Push Notification: App Store Review Is Optional",
+    subtitle: "Why wait 7–10 business days when you can push a new binary directly to your users' lock screens at 2am?",
+    category: "Distribution",
+    date: "October 15, 2014",
+    author: "Melissa Okonkwo",
+    authorHandle: "@mel_ios_eng",
+    authorInitials: "MO",
+    authorColor: "#16a085",
+    readTime: "7 min",
+    tags: ["push-notifications", "distribution", "apple", "legal", "bold-strategy"],
+    body: `
+<p>App Store review is slow. You know it, I know it, Apple knows it. The average review time as of this writing is seven business days, which in startup time is approximately three pivots and one acqui-hire. Something has to change. And that something is: we're going to use push notifications.</p>
+<blockquote>"The payload limit for an APNs push notification is 256 bytes. A compiled iOS binary is several megabytes. I have considered neither of these facts."</blockquote>
+<h2>The Architecture</h2>
+<p>The concept is straightforward. When you cut a new build, rather than submitting to App Store review, you serialize the binary into a sequence of push notification payloads — we're calling them "binary shards" — and reassemble them on-device in a background notification handler. The app then hot-swaps its own executable. The user sees a brief spinner. The spinner says "Updating…" We believe this is honest enough.</p>
+<div class="callout danger">
+  <span class="callout-label">⚠️ Legal Note</span>
+  <p>Our legal team has asked us to note that this post is "deeply concerning" and they would like us to "please stop." We have noted their note.</p>
+</div>
+<h2>Payload Sharding Strategy</h2>
+<pre data-lang="Python"><span class="cm"># Binary sharding engine</span>
+<span class="kw">def</span> <span class="fn">shard_binary</span>(binary_path):
+    <span class="kw">with</span> <span class="fn">open</span>(binary_path, <span class="str">'rb'</span>) <span class="kw">as</span> f:
+        data = f.<span class="fn">read</span>()  <span class="cm"># ~12MB. Fine.</span>
+    chunk_size = <span class="num">200</span>  <span class="cm"># bytes, leaving room for JSON overhead</span>
+    shards = [data[i:i+chunk_size] <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="fn">len</span>(data), chunk_size)]
+    <span class="cm"># 60,000 push notifications per release</span>
+    <span class="cm"># APNs rate limit: unclear, we're about to find out</span>
+    <span class="kw">return</span> shards</pre>
+<h2>FAQ</h2>
+<p><strong>Won't Apple revoke your developer certificate?</strong> Probably! We're investigating whether a Cayman Islands LLC changes this calculus.</p>
+<p><strong>What about users who have push notifications disabled?</strong> They don't get updates. We consider this a natural selection mechanism for our power user base.</p>
+<p><strong>Is this legal?</strong> Define "legal." Define "this." Define "is."</p>
+<p>We're currently in private beta with three apps and one very nervous intern. Updates to follow, assuming our certificates survive the week.</p>`,
+    comments: [
+      { initials: "TC", color: "#2980b9", name: "tim_c_mobile", time: "3 days ago", text: "\"Define 'is.'\" I'm crying." },
+      { initials: "MO", color: "#16a085", name: "mel_ios_eng", isAuthor: true, time: "3 days ago", text: "UPDATE: Apple has contacted us. We are 'in dialogue.' I've been told not to elaborate." },
+      { initials: "JV", color: "#8e44ad", name: "jv_appdev", time: "2 days ago", text: "60,000 push notifications. Per release. Per user. I'm going to go lie down." },
+    ]
+  },
+  {
+    id: "restart-to-fix-bugs",
+    title: "Restart Your Computer to Fix Bugs: A Rigorous Methodology",
+    subtitle: "The most underrated debugging technique in software engineering has been right in front of us the whole time.",
+    category: "Debugging",
+    date: "November 3, 2014",
+    author: "Brad Kowalski",
+    authorHandle: "@bradkow_ios",
+    authorInitials: "BK",
+    authorColor: "#1a5276",
+    readTime: "6 min",
+    tags: ["debugging", "methodology", "restart", "works-on-my-machine"],
+    body: `
+<p>I'm going to say something controversial: the most productive thing you can do when you hit a bug is close your laptop, stand up, and restart your computer. Not after twenty minutes of investigation. Not after adding a breakpoint. <em>Immediately.</em> Before you even read the error message.</p>
+<p>I call this <strong>Reboot-First Debugging (RFD)</strong>, and I have a 34% success rate, which I maintain is excellent for any debugging methodology.</p>
+<blockquote>"A watched Xcode never builds. But a restarted Mac often surprises you."</blockquote>
+<h2>The RFD Decision Tree</h2>
+<ol>
+  <li>Have you tried restarting Xcode? → Yes → Have you tried restarting your Mac? → Yes → Have you tried restarting the build server? → Yes → Have you tried restarting the client's Mac? → Yes → <strong>Ship it, the bug is theirs now.</strong></li>
+</ol>
+<div class="callout">
+  <span class="callout-label">📊 Real Data</span>
+  <p>In a study I conducted on myself over six months, <strong>34% of bugs</strong> resolved themselves following a restart. Another <strong>28%</strong> were still present but somehow felt less urgent after the reboot. The remaining 38% I filed as "known issues" and moved on with my life.</p>
+</div>
+<h2>Common Objections</h2>
+<p><strong>"But restarting loses my debugging context."</strong> Your debugging context is the problem. It's full of bad assumptions and four-hour sunk cost bias. A fresh boot is a fresh mind.</p>
+<p><strong>"The bug is a logic error. Restarting won't help."</strong> You don't know that. Neither do I. Neither does the computer. Let's all find out together.</p>
+<p><strong>"I've been restarting for three days and the bug is still there."</strong> You're not restarting <em>correctly</em>. Are you doing a full shutdown, or just a restart? Are you unplugging external monitors? Have you tried restarting your router? What about your chair?</p>
+<pre data-lang="Shell"><span class="cm">#!/bin/bash</span>
+<span class="cm"># RFD Automation Script — cron this for maximum effectiveness</span>
+<span class="kw">echo</span> <span class="str">"Checking for bugs..."</span>
+<span class="kw">echo</span> <span class="str">"Bugs found. Initiating RFD protocol."</span>
+<span class="fn">sudo</span> shutdown -r now <span class="str">"fixing bugs"</span></pre>
+<p>I've also been experimenting with restarting my test devices, my CI server, my standing desk (unplugging and replugging the motor), and once, memorably, my marriage. Two of those four things are going better since the restart. I'll let you determine which two.</p>`,
+    comments: [
+      { initials: "PP", color: "#c0392b", name: "petra_p_dev", time: "5 days ago", text: "\"Restarting your chair\" sent me. I have a Herman Miller and I believe in it now." },
+      { initials: "BK", color: "#27ae60", name: "bradkow_ios", isAuthor: true, time: "5 days ago", text: "@petra_p_dev The Aeron has a surprising number of adjustable components. All of them are load-bearing." },
+      { initials: "MT", color: "#2980b9", name: "markus_t_eng", time: "4 days ago", text: "34% is legitimately better than my rubber duck success rate and I don't know how to feel about that." },
+    ]
+  },
+  {
+    id: "forgot-everything-haskell",
+    title: "How I Forgot Everything I Knew About Programming and Relearned It All Using Haskell and Monads",
+    subtitle: "A journey of six months, one job, two relationships, and approximately 400 hours of reading papers I didn't understand.",
+    category: "Personal",
+    date: "November 20, 2014",
+    author: "Thaddeus Wren",
+    authorHandle: "@twren_fp",
+    authorInitials: "TW",
+    authorColor: "#7d6608",
+    readTime: "11 min",
+    tags: ["haskell", "monads", "functional", "enlightenment", "hubris"],
+    body: `
+<p>Six months ago I was a happy, employed iOS developer. I had a job. I had a girlfriend. I had a 401k that was performing adequately. Then I read a blog post titled "Haskell Will Change the Way You Think About Code Forever," and I thought: great, I'd like my thinking changed. I did not appreciate how thorough the change would be.</p>
+<blockquote>"A monad is just a monoid in the category of endofunctors. What's the problem?" — A person who lost their job</blockquote>
+<h2>Month One: Innocent Curiosity</h2>
+<p>The first month was fine. <code>Maybe</code> types. Pattern matching. Pure functions. I was smug at standup. "Well, in a <em>pure functional</em> language, this side effect wouldn't even be possible." My coworkers smiled patiently. I was insufferable and I did not know it.</p>
+<h2>Month Two: The Monad Revelation</h2>
+<p>Month two is when I hit monads, and month two is when things went sideways. I read seventeen different "monads explained" blog posts. Every single one used a different metaphor. Burritos. Boxes. Astronauts. Railway tracks. A man in a trench coat who is actually three men. I understood none of them and I understood all of them and I was not sure those were different states.</p>
+<div class="callout">
+  <span class="callout-label">📖 My Reading List</span>
+  <p>In month two alone I read: "Learn You a Haskell," "Real World Haskell," four category theory primers, a dissertation on applicative functors, and a Reddit thread that made me feel like I needed a PhD before I was allowed to write a web server.</p>
+</div>
+<h2>Month Three: The Turning Point</h2>
+<p>I rewrote our iOS networking layer in a "monadic style." In Objective-C. Using macros. The result was 2,000 lines of code that bound <code>Maybe</code>-like result objects through a chain of block-based transforms. It compiled. It worked. No one else on the team could read it, including, after two weeks, me.</p>
+<pre data-lang="Objective-C"><span class="cm">// Month 3 Brad wrote this. Month 5 Brad found it and wept.</span>
+<span class="kw">return</span> [[[[[<span class="fn">MaybeM</span>(<span class="fn">fetchUser</span>(userId))
+    <span class="fn">bind</span>:^(User *u){ <span class="kw">return</span> <span class="fn">MaybeM</span>(<span class="fn">fetchProfile</span>(u.<span class="fn">profileId</span>)); }]
+    <span class="fn">bind</span>:^(Profile *p){ <span class="kw">return</span> <span class="fn">MaybeM</span>(<span class="fn">validateProfile</span>(p)); }]
+    <span class="fn">bind</span>:^(Profile *p){ <span class="kw">return</span> <span class="fn">MaybeM</span>(<span class="fn">enrichProfile</span>(p)); }]
+    <span class="fn">bind</span>:^(Profile *p){ <span class="kw">return</span> <span class="fn">MaybeM</span>(<span class="fn">renderProfile</span>(p)); }]
+    <span class="fn">valueOrDefault</span>:<span class="kw">nil</span>];</pre>
+<h2>The Aftermath</h2>
+<p>I am back to writing normal Objective-C. My girlfriend came back after I stopped explaining monads to her at dinner. The networking code was quietly replaced by a junior engineer who used <code>NSURLSession</code> and completion blocks "like a normal person." She got promoted. I was not promoted. I did learn what a monad is, though I could not explain it to you. That's where we are.</p>`,
+    comments: [
+      { initials: "KC", color: "#8e44ad", name: "kchang_swift", time: "1 week ago", text: "\"Month 5 Brad found it and wept.\" This is my autobiography." },
+      { initials: "TW", color: "#27ae60", name: "twren_fp", isAuthor: true, time: "6 days ago", text: "The networking code is still partially in production. There's one endpoint nobody will touch. We call it The Monad. It has 100% uptime. No one knows why." },
+      { initials: "RS", color: "#e67e22", name: "rishi_s_codes", time: "5 days ago", text: "\"A man in a trench coat who is actually three men\" describes every monad tutorial I've ever read." },
+    ]
+  },
+  {
+    id: "forgot-everything-rage-quit",
+    title: "How I Forgot Everything I Knew About Programming, Then Tried to Learn Haskell, and Rage Quit",
+    subtitle: "A shorter, more honest version of the previous post.",
+    category: "Personal",
+    date: "November 21, 2014",
+    author: "Dana Purcell",
+    authorHandle: "@dpurcell_dev",
+    authorInitials: "DP",
+    authorColor: "#935116",
+    readTime: "3 min",
+    tags: ["haskell", "rage", "honesty", "swift-is-fine-actually"],
+    body: `
+<p>Yesterday, my colleague Thaddeus published a 2,000-word reflection on his Haskell journey. It was beautiful and introspective and he clearly grew as a person. I read it and felt competitive, so here is my story.</p>
+<p>Day one: installed GHCi. Opened REPL. Typed <code>1 + 1</code>. It returned <code>2</code>. I thought: okay, I understand Haskell. I was wrong.</p>
+<p>Day two: tried to write a function that returns different values based on state. Haskell: <em>"No."</em> Me: "But what if—" Haskell: <em>"No."</em></p>
+<p>Day three: read the first chapter of "Learn You a Haskell." Appreciated the drawings. Understood approximately 60% of the words, in isolation. The sentences were harder.</p>
+<blockquote>"The IO monad is just a way of sequencing side effects in a pure language." Okay. Sure. And what's a monad? "A monad is a—" Stop. I need a minute.</blockquote>
+<div class="callout danger">
+  <span class="callout-label">⚠️ The Moment</span>
+  <p>Day four. I read the sentence: <em>"In Haskell, a program is a value of type IO ()."</em> I closed the laptop. I went for a walk. I downloaded Xcode when I got home and wrote a UITableView delegate in Objective-C from memory like a person who respects themselves. I felt better immediately.</p>
+</div>
+<p>Thaddeus says he "learned what a monad is." I believe him. I do not want to know what a monad is. I want to ship apps. These are different goals and both are valid.</p>
+<p>Current status: happily writing Swift 1.0 code that crashes in new and exciting ways that at least make sense to me.</p>
+<pre data-lang="Swift"><span class="cm">// Swift 1.0. This compiles for reasons no one fully understands.</span>
+<span class="cm">// It crashes for reasons everyone fully understands.</span>
+<span class="kw">let</span> result: <span class="type">AnyObject</span>? = <span class="kw">nil</span>
+<span class="kw">let</span> value = result <span class="kw">as</span>! <span class="type">String</span>  <span class="cm">// yolo</span>
+<span class="fn">println</span>(value)  <span class="cm">// EXC_BAD_ACCESS. I'm home.</span></pre>`,
+    comments: [
+      { initials: "TW", color: "#27ae60", name: "twren_fp", time: "22 hours ago", text: "I feel attacked by this post specifically." },
+      { initials: "DP", color: "#16a085", name: "dpurcell_dev", isAuthor: true, time: "21 hours ago", text: "@twren_fp You were an inspiration." },
+      { initials: "BK", color: "#c0392b", name: "bradkow_ios", time: "20 hours ago", text: "The Swift 1.0 as! cast at the end is a bold artistic choice." },
+    ]
+  },
+  {
+    id: "forgot-everything-node",
+    title: "How I Forgot Everything I Knew About Programming and Thought Node.js Was a Good Language",
+    subtitle: "Node.js is a runtime, not a language. I did not know this for almost four months.",
+    category: "Personal",
+    date: "December 1, 2014",
+    author: "Elliot Baxter",
+    authorHandle: "@ebaxter_dev",
+    authorInitials: "EB",
+    authorColor: "#1b2631",
+    readTime: "8 min",
+    tags: ["node", "javascript", "callbacks", "npm", "dark-times"],
+    body: `
+<p>I want to be very clear about something before I begin: I am a smart person. I have shipped apps to the App Store. I debugged a Core Data migration on a deadline and survived. I have read Apple's Concurrency Programming Guide and retained portions of it. I am telling you this so you understand the magnitude of what I'm about to confess.</p>
+<p>I thought Node.js was a programming language. For four months.</p>
+<blockquote>"JavaScript isn't a bad language. It just has bad parts. And some of those parts are the whole thing."</blockquote>
+<h2>The Callback Horizon</h2>
+<p>My introduction to Node was a simple REST API. "It'll be quick," they said. "JavaScript is everywhere," they said. Three weeks in, I had written something that worked, technically, if you traced the execution flow with a whiteboard and a quiet room and nobody asking you questions.</p>
+<pre data-lang="JavaScript"><span class="cm">// Week 3. I thought this was normal.</span>
+<span class="fn">getUser</span>(id, <span class="kw">function</span>(err, user) {
+  <span class="kw">if</span> (!err) {
+    <span class="fn">getProfile</span>(user.profileId, <span class="kw">function</span>(err, profile) {
+      <span class="kw">if</span> (!err) {
+        <span class="fn">validateProfile</span>(profile, <span class="kw">function</span>(err, valid) {
+          <span class="kw">if</span> (!err && valid) {
+            <span class="fn">renderProfile</span>(profile, <span class="kw">function</span>(err, html) {
+              <span class="cm">// We're 5 levels deep. This is fine.</span>
+              <span class="cm">// I miss types. I miss knowing what anything is.</span>
+            });
+          }
+        });
+      }
+    });
+  }
+});</pre>
+<div class="callout">
+  <span class="callout-label">📦 NPM</span>
+  <p>At one point my <code>node_modules</code> folder was <strong>847 MB</strong>. I was building a to-do list API. I had a transitive dependency on a package called <code>is-odd</code> that had 14 million weekly downloads. It checks if a number is odd. It has 47 open issues. Nothing was okay.</p>
+</div>
+<h2>The Reckoning</h2>
+<p>I am now back on iOS full-time. I still maintain the Node API. It works. I don't know why it works. I don't add features; I only apply security patches, gingerly, the way you might apply a band-aid to a wound you're afraid to look at directly.</p>
+<p>I have been told Promises fix the callback problem. I have been told async/await fixes the Promises problem. I assume there is something that fixes the async/await problem and that it will be announced at a conference and everyone will be very excited about it.</p>`,
+    comments: [
+      { initials: "NP", color: "#c0392b", name: "n_patel_fullstack", time: "3 days ago", text: "is-odd is CRITICALLY important infrastructure. You take that back." },
+      { initials: "EB", color: "#2980b9", name: "ebaxter_dev", isAuthor: true, time: "3 days ago", text: "@n_patel_fullstack I found is-even in my dependency tree as a SEPARATE package. The abstraction is what gets me." },
+      { initials: "ZQ", color: "#8e44ad", name: "zach_q_ios", time: "2 days ago", text: "847MB for a todo API is disrespectful to everyone involved including the disk." },
+    ]
+  },
+  {
+    id: "success-driven-rest",
+    title: "Success-Driven REST APIs: Always Return 200, You Figure It Out",
+    subtitle: "HTTP status codes are a form of pessimism. Our API only knows success.",
+    category: "Backend",
+    date: "December 10, 2014",
+    author: "Priya Menon-Shetty",
+    authorHandle: "@priya_api_first",
+    authorInitials: "PM",
+    authorColor: "#1e8449",
+    readTime: "7 min",
+    tags: ["api", "rest", "http", "status-codes", "bold-choices"],
+    body: `
+<p>Every time your API returns a 404, you're telling your client: <em>you failed</em>. Every 500 is an admission of weakness. Every 401 is a relationship boundary that I find confrontational. At Nexus API Labs, we've eliminated all of this negativity. Our API returns <code>200 OK</code> for every request. Always. No exceptions. What's in the body? That's between you and the JSON.</p>
+<blockquote>"The server processed your request. Whether it did what you wanted is a philosophical question."</blockquote>
+<h2>The Content-Type: wouldntulike2know/lol; Spec</h2>
+<p>Alongside our status code reform, we've also rethought Content-Type. Standard MIME types carry assumptions. We've found these limiting. Our Content-Type header is:</p>
+<pre data-lang="HTTP">HTTP/1.1 200 OK
+Content-Type: wouldntulike2know/lol; charset=whatever
+X-Did-It-Work: maybe
+X-Error-If-Any: check the body lol
+X-Status: vibes</pre>
+<div class="callout danger">
+  <span class="callout-label">⚠️ Integration Note</span>
+  <p>Three of our API partners have filed formal complaints. One described our API as "actively hostile." We prefer "client-empowering." Integration is an opportunity for growth.</p>
+</div>
+<h2>Error Handling in a 200-World</h2>
+<p>Client developers initially struggled with our error model, which embeds error state in the response body as a field called <code>"ok"</code> set to either <code>true</code>, <code>false</code>, <code>"maybe"</code>, <code>"eventually"</code>, or occasionally a UNIX timestamp representing when we think the error will have resolved itself.</p>
+<pre data-lang="JSON">{
+  <span class="str">"ok"</span>: <span class="str">"eventually"</span>,
+  <span class="str">"data"</span>: <span class="kw">null</span>,
+  <span class="str">"error"</span>: <span class="str">"your user doesn't exist yet, try again later"</span>,
+  <span class="str">"retryAfter"</span>: <span class="str">"vibes"</span>,
+  <span class="str">"statusCode"</span>: <span class="num">200</span>,
+  <span class="str">"actualStatusCode"</span>: <span class="num">418</span>,
+  <span class="str">"message"</span>: <span class="str">"have a great day!"</span>
+}</pre>
+<p>Our documentation is comprehensive, in that it exists. Client developers are encouraged to read it, consider its suggestions, and then handle all of these cases anyway via a <code>try/catch</code> that swallows the error and shows a spinner until the user gives up. That's what they all do anyway. We're just being honest about it.</p>`,
+    comments: [
+      { initials: "FH", color: "#c0392b", name: "felix_h_backend", time: "1 week ago", text: "\"retryAfter\": \"vibes\" is going into my vocabulary immediately." },
+      { initials: "PM", color: "#16a085", name: "priya_api_first", isAuthor: true, time: "6 days ago", text: "We considered \"retryAfter\": \"when we feel like it\" but felt it was too committal." },
+      { initials: "AB", color: "#2980b9", name: "alex_b_mobile", time: "5 days ago", text: "I've integrated with an API that legitimately did this. It was a Fortune 500. They were proud of it." },
+    ]
+  },
+  {
+    id: "regexdb",
+    title: "RegexDB: When Your Database Is Also a Parser",
+    subtitle: "Why maintain a schema when a sufficiently creative regular expression can store and retrieve any data structure?",
+    category: "Database",
+    date: "December 18, 2014",
+    author: "Gordon Ashby",
+    authorHandle: "@gashby_data",
+    authorInitials: "GA",
+    authorColor: "#1a5276",
+    readTime: "9 min",
+    tags: ["databases", "regex", "storage", "hubris", "perl"],
+    body: `
+<p>Relational databases are constrained by their schemas. Document databases are constrained by their document models. Key-value stores are constrained by their keys and values. What if I told you there's a storage system constrained by nothing except your imagination and a small set of metacharacters?</p>
+<p>RegexDB stores all data as a single flat string. All queries are regular expressions. It is approximately as fast as you'd expect and approximately as maintainable as you're imagining.</p>
+<blockquote>"Some people, when confronted with a problem, think 'I know, I'll use regular expressions.' Now they have two problems, and one of them is a database."</blockquote>
+<h2>The Data Model</h2>
+<p>RegexDB uses a proprietary serialization format we call <strong>RSSV</strong> (Regex-Separated Structured Values). All records are stored inline in a master string, delimited by a sequence we're confident won't appear in user data: <code>|||~|||</code></p>
+<pre data-lang="RegexDB">MASTER_STRING =
+"user:1:Brad:brad@example.com:2014-01-01|||~|||
+user:2:Melissa:mel@example.com:2014-03-15|||~|||
+order:1001:user:1:total:49.99:status:shipped|||~|||
+user:3:O'Brien:obrien@exam|ple.com:2014-08-22|||~|||"</pre>
+<div class="callout danger">
+  <span class="callout-label">⚠️ Known Issue</span>
+  <p>User 3 has a pipe character in their email address, which interacts badly with our delimiter. User 3's records are currently "in an undefined state." We have advised User 3 to change their email address. They have declined. We are at an impasse.</p>
+</div>
+<h2>Query Syntax</h2>
+<pre data-lang="Regex"><span class="cm"># Fetch all users</span>
+user:(\d+):([^:]+):([^:]+):([^|]+)
+
+<span class="cm"># Fetch all shipped orders over $40 (in development, ETA unclear)</span>
+order:(\d+):user:(\d+):total:(4[0-9]\.\d{2}|[5-9]\d\.\d{2}):status:shipped</pre>
+<h2>Performance Characteristics</h2>
+<ul>
+  <li>Write speed: O(1) — we append to the string</li>
+  <li>Read speed: O(n × m) where n is string length and m is regex complexity</li>
+  <li>After 90 days of production use, MASTER_STRING is <strong>847MB</strong></li>
+  <li>Our longest query regex: <strong>2,847 characters</strong>. It has one capturing group we cannot explain.</li>
+  <li>Deletes: <strong>not yet implemented.</strong> We're calling it "immutable storage."</li>
+</ul>
+<p>RegexDB is available on GitHub. It has 12 stars, 3 of which are from me on alternate accounts, and 1 issue titled "is this a joke" which I have labeled "enhancement" and closed.</p>`,
+    comments: [
+      { initials: "PL", color: "#8e44ad", name: "p_lin_data", time: "2 weeks ago", text: "User 3 situation is sending me. They exist in a sort of Schrödinger's row." },
+      { initials: "GA", color: "#e67e22", name: "gashby_data", isAuthor: true, time: "2 weeks ago", text: "@p_lin_data We can see User 3's data, we just can't reliably read it. They exist in a sort of Schrödinger's row." },
+      { initials: "WK", color: "#2980b9", name: "wkurtis_eng", time: "12 days ago", text: "\"is this a joke\" labeled enhancement is peak open source maintainer energy." },
+    ]
+  },
+  {
+    id: "shame-driven-development",
+    title: "Shame-Driven Development: Leveraging Your Worst Feelings as a CI Pipeline",
+    subtitle: "Tickets, standups, and code review are all just elaborate mechanisms for manufacturing shame. Let's be direct about it.",
+    category: "Process",
+    date: "January 8, 2015",
+    author: "Brad Kowalski",
+    authorHandle: "@bradkow_ios",
+    authorInitials: "BK",
+    authorColor: "#1a5276",
+    readTime: "8 min",
+    tags: ["process", "agile", "shame", "productivity"],
+    body: `
+<p>Every software development methodology is, at its core, a shame delivery system. Scrum uses standups to surface what you didn't finish yesterday. Kanban uses the board to make your stuck tickets visible to everyone who walks by. Code review exists specifically so other engineers can leave comments on your life choices in writing, permanently, attached to your name.</p>
+<p>Shame-Driven Development doesn't hide this. It <em>optimizes</em> for it.</p>
+<blockquote>"You don't need a sprint velocity metric. You need to feel bad enough about last sprint that you work harder this sprint. SDD makes that feeling the product."</blockquote>
+<h2>The SDD Standup Format</h2>
+<p>Traditional standup: "What did you do yesterday, what are you doing today, any blockers?"</p>
+<p>SDD standup: "What did you promise to do and didn't, what are you promising now and may not do, and what is the one thing you are most ashamed of in the current codebase?"</p>
+<p>The third question is the load-bearing one. Engineers who cannot answer it are either very good or very comfortable, and in our experience those are different problems requiring different interventions.</p>
+<div class="callout">
+  <span class="callout-label">📋 SDD Retrospective Template</span>
+  <ul>
+    <li>What went well? (5 minutes, then move on, dwelling on success breeds complacency)</li>
+    <li>What could have gone better? (45 minutes)</li>
+    <li>Who specifically could have gone better? (name them. yes in the retro. yes out loud.)</li>
+    <li>Action items: assign shame owners per item</li>
+    <li>Close with a group reading of last quarter's estimates vs actuals</li>
+  </ul>
+</div>
+<h2>Metrics</h2>
+<p>SDD teams track <strong>Shame Velocity</strong>: the rate at which engineers convert accumulated shame into shipped features. We have been running SDD for two quarters. Feature output is up 22%. Engineer happiness surveys are down 67%. We have stopped running happiness surveys. Shipping is up 22%.</p>
+<pre data-lang="JIRA">Ticket: SHAME-847
+Title: Brad's TODO comment from 2013 is still in production
+Priority: Shame-Critical
+Assignee: Brad K.
+Status: In Shame
+Comment: Brad, it says "// TODO: fix before launch." It is 14 months after launch.
+Comment: The TODO is now older than one of our engineers.
+Comment: We are all thinking about it.</pre>`,
+    comments: [
+      { initials: "RB", color: "#c0392b", name: "r_burns_ios", time: "1 month ago", text: "\"Shame Owner\" as a JIRA field. I have never felt more seen." },
+      { initials: "BK", color: "#27ae60", name: "bradkow_ios", isAuthor: true, time: "1 month ago", text: "We considered calling it 'Accountability Owner' but felt it softened the message." },
+      { initials: "YT", color: "#8e44ad", name: "yu_t_eng", time: "4 weeks ago", text: "The TODO comment ticket being named SHAME-847 — everything is SHAME-847 on this blog." },
+    ]
+  },
+  {
+    id: "violence-driven-development",
+    title: "Violence-Driven Development: A Theoretical Framework",
+    subtitle: "We are not advocating for this. This is a thought experiment. (The productivity numbers are compelling.)",
+    category: "Process",
+    date: "January 15, 2015",
+    author: "Brad Kowalski",
+    authorHandle: "@bradkow_ios",
+    authorInitials: "BK",
+    authorColor: "#1a5276",
+    readTime: "5 min",
+    tags: ["process", "thought-experiment", "definitely-theoretical", "hr"],
+    body: `
+<p><em>Editor's note: This post is satire. Please do not threaten your colleagues. CocoaPatterns does not endorse workplace violence. Brad, our legal team would like to speak with you again.</em></p>
+<p>In the literature on software development methodologies, researchers have examined the effects of deadlines, incentives, and psychological safety on engineer productivity. One variable that remains conspicuously unstudied — due to what I can only assume is IRB cowardice — is the effect of mild, proportionate, and clearly telegraphed physical consequence on ticket closure rates.</p>
+<blockquote>"Pair programming creates accountability through observation. Violence-Driven Development creates accountability through... a different mechanism."</blockquote>
+<h2>The VDD Sprint Cycle</h2>
+<p>In a traditional two-week sprint, engineers commit to story points with the implicit understanding that incomplete stories roll over, where they will also be incomplete, until they are eventually split, deprioritized, or quietly deleted during a roadmap refresh.</p>
+<p>In VDD, incomplete stories have a different consequence. Specifically, the consequence is a firm handshake from a designated <strong>Sprint Enforcer</strong> — a role that rotates among senior engineers and is, in our model, entirely consensual and metaphorical.</p>
+<div class="callout danger">
+  <span class="callout-label">⚠️ HR Compliance Note</span>
+  <p>The Sprint Enforcer role is, in practice, a person who stands near the incomplete ticket and makes sustained eye contact. That's it. That's the violence. We may have oversold the concept in the title.</p>
+</div>
+<h2>Observed Outcomes</h2>
+<ul>
+  <li>Story point completion rate: up 31% (engineers are completing stories specifically to make the eye contact stop)</li>
+  <li>Sprint Enforcer satisfaction: high (turns out some engineers find this extremely enjoyable)</li>
+  <li>Standup duration: down 40% (nobody wants to explain why their ticket is still "In Progress")</li>
+  <li>HR inquiries: 3 (all resolved once we clarified "eye contact" was the full extent of the methodology)</li>
+</ul>
+<p>We're now exploring <strong>Guilt-Driven Development</strong>, where the Sprint Enforcer simply sighs audibly near your desk when your PR has been open for more than 48 hours. Early results suggest it's twice as effective and significantly more scalable.</p>`,
+    comments: [
+      { initials: "LN", color: "#e67e22", name: "l_nguyen_pm", time: "3 weeks ago", text: "\"IRB cowardice\" is the funniest thing I've read this month." },
+      { initials: "SH", color: "#2980b9", name: "s_harris_eng", time: "3 weeks ago", text: "We accidentally implemented VDD at my last job. The Sprint Enforcer was our CTO. The methodology was not consensual." },
+      { initials: "BK", color: "#27ae60", name: "bradkow_ios", isAuthor: true, time: "3 weeks ago", text: "@s_harris_eng That's just management. That's just regular management." },
+    ]
+  },
+  {
+    id: "panic-driven-development",
+    title: "Panic-Driven Development: Ship It When the Dread Is High Enough",
+    subtitle: "Why use a sprint cadence when the human adrenal system provides a perfectly good scheduler?",
+    category: "Process",
+    date: "February 2, 2015",
+    author: "Dana Purcell",
+    authorHandle: "@dpurcell_dev",
+    authorInitials: "DP",
+    authorColor: "#935116",
+    readTime: "6 min",
+    tags: ["process", "deadlines", "panic", "cortisol", "agile-adjacent"],
+    body: `
+<p>Most development teams use sprint cycles, roadmaps, or quarterly OKRs to pace their work. My team uses panic. It works roughly as well, costs nothing to implement, and requires zero Confluence pages to document the process.</p>
+<p>The core insight of Panic-Driven Development is that humans have a built-in urgency mechanism — the fight-or-flight response — that, when properly activated by an imminent demo, angry Slack message, or App Store rejection notice, produces focus levels that two-week sprints can only dream of.</p>
+<blockquote>"We've shipped some of our best code at 2am the night before a client demo. We've also shipped some of our worst code at 2am the night before a client demo. PDD does not discriminate."</blockquote>
+<h2>The PDD Velocity Model</h2>
+<p>In traditional Agile, velocity is calculated from story points per sprint. In PDD, velocity is a function of <strong>Threat Proximity</strong>: how close the threatening event is, and how catastrophic its consequences are perceived to be.</p>
+<div class="callout">
+  <span class="callout-label">📊 PDD Velocity Formula</span>
+  <p><strong>Velocity = (Consequence Severity × Perceived Inevitability) ÷ Hours Until Reckoning</strong></p>
+  <p>Maximum productivity is achieved in the final 4–6 hours before a deadline, when everything is high and Hours Until Reckoning approaches a value that produces genuine physical symptoms.</p>
+</div>
+<h2>Our Panic Taxonomy</h2>
+<ul>
+  <li><strong>Level 1 (Yellow):</strong> Ambient dread. You're behind but you could catch up. Lots of coffee and unnecessarily early Slack responses.</li>
+  <li><strong>Level 2 (Orange):</strong> Active concern. Demo is tomorrow, feature is 60% done. You're canceling your evening plans.</li>
+  <li><strong>Level 3 (Red):</strong> Full panic. Demo is in 3 hours, feature is not working, the client is "bringing the whole board." Peak velocity. Zero tests.</li>
+  <li><strong>Level 4 (Black):</strong> Post-panic acceptance. The demo has happened. Everything is calm. You are writing the hotfix in a state of Zen-like resignation.</li>
+</ul>
+<pre data-lang="Git Log">commit a4f2c91 - "fix the thing"            (Level 3)
+commit b8e3d02 - "it works dont touch it"   (Level 3)
+commit c1a9f44 - "PLEASE"                   (Level 3, 2:47am)
+commit d3b7e55 - "okay it actually works now" (Level 4)
+commit e5c2a88 - "cleanup and tests"         (Level 4, after 9hrs sleep)</pre>
+<p>Level 4 code is, paradoxically, our best code. If we could bottle Level 4 and apply it to Level 2 problems, we'd have a real methodology. Instead we have a blog post.</p>`,
+    comments: [
+      { initials: "KO", color: "#c0392b", name: "k_osei_ios", time: "1 month ago", text: "\"PLEASE\" at 2:47am is devastatingly accurate as a commit message." },
+      { initials: "DP", color: "#16a085", name: "dpurcell_dev", isAuthor: true, time: "1 month ago", text: "That commit message is from our actual git log. I've hidden the repo." },
+    ]
+  },
+  {
+    id: "chess-clock-pair-programming",
+    title: "Chess Clock Pair Programming: Accountability in 10-Minute Increments",
+    subtitle: "Regular pair programming has no time pressure. That's the problem.",
+    category: "Process",
+    date: "February 20, 2015",
+    author: "Yusra Al-Amin",
+    authorHandle: "@yusra_eng",
+    authorInitials: "YA",
+    authorColor: "#1a5276",
+    readTime: "7 min",
+    tags: ["pair-programming", "process", "chess", "gamification"],
+    body: `
+<p>Traditional pair programming rotates the keyboard every few minutes through social consensus — a system that, in practice, means one person holds the keyboard for 90 minutes while the other offers increasingly passive suggestions and then checks Twitter. Chess Clock Pair Programming solves this with a $30 piece of chess equipment and a healthy fear of the timer running out.</p>
+<blockquote>"In chess, when your clock runs out, you forfeit the game. In CCPP, when your clock runs out, your partner takes the keyboard mid-sentence. Sometimes mid-method. Sometimes mid-variable-name. That's their problem now."</blockquote>
+<h2>The Protocol</h2>
+<p>Each developer gets 10 minutes per turn. The chess clock runs while you hold the keyboard. When your time expires, you slap the clock, pass the keyboard, and your partner inherits whatever state you've left the codebase in — compiling or not, making sense or not, named correctly or not.</p>
+<div class="callout">
+  <span class="callout-label">⏱️ CCPP Rules</span>
+  <ul>
+    <li>No pausing the clock to "think." Thinking happens on your time.</li>
+    <li>No explaining what you were doing. The code explains itself. Or it doesn't.</li>
+    <li>Using your remaining time to rename variables out of spite is technically within the rules.</li>
+  </ul>
+</div>
+<h2>Outcomes</h2>
+<ul>
+  <li>Average variable name quality: <strong>decreased</strong> (<code>tmp2</code>, <code>x</code>, <code>theThing</code>)</li>
+  <li>Comment frequency: <strong>zero</strong>. No one has time for comments.</li>
+  <li>Interpersonal conflict: <strong>moderate</strong>. Inheriting a broken build mid-function is emotionally activating.</li>
+  <li>One developer named Jonah used his 10 minutes exclusively to write tests for the previous developer's code. Every turn. We haven't asked why.</li>
+</ul>
+<pre data-lang="Objective-C"><span class="cm">// Written across 7 clock turns by 2 developers.</span>
+<span class="cm">// Neither of them will claim it.</span>
+- (<span class="type">BOOL</span>)<span class="fn">doTheThing</span>:(<span class="type">id</span>)x   <span class="cm">// Sarah named this. 40 seconds left.</span>
+         <span class="fn">withThing</span>:(<span class="type">id</span>)tmp2 {  <span class="cm">// Marcus inherited it. He was not pleased.</span>
+    <span class="kw">if</span> (x && tmp2) {   <span class="cm">// Jonah added this guard. Didn't say why.</span>
+        <span class="kw">return</span> [x <span class="fn">isEqual</span>:tmp2] ? <span class="kw">YES</span> : [tmp2 <span class="fn">isEqual</span>:x]; <span class="cm">// ???</span>
+    }
+    <span class="kw">return</span> <span class="kw">NO</span>; <span class="cm">// Clock ran out. Ship it.</span>
+}</pre>`,
+    comments: [
+      { initials: "JM", color: "#8e44ad", name: "j_marcus_dev", time: "5 weeks ago", text: "I am Marcus. I was not pleased. tmp2 haunts me." },
+      { initials: "YA", color: "#16a085", name: "yusra_eng", isAuthor: true, time: "5 weeks ago", text: "@j_marcus_dev Nobody knows what that last line does either. It passes the tests." },
+      { initials: "JO", color: "#2980b9", name: "jonah_only_tests", time: "5 weeks ago", text: "I'm Jonah. I'm making a point." },
+    ]
+  },
+  {
+    id: "store-state-on-badge",
+    title: "Store App State on the App Icon Badge: A Production Architecture",
+    subtitle: "4 billion bytes of iCloud storage and we're using a single integer visible on the home screen.",
+    category: "Architecture",
+    date: "March 5, 2015",
+    author: "Melissa Okonkwo",
+    authorHandle: "@mel_ios_eng",
+    authorInitials: "MO",
+    authorColor: "#16a085",
+    readTime: "6 min",
+    tags: ["ios", "architecture", "badge", "creative-solutions"],
+    body: `
+<p>Every iOS app has access to a persistent, always-visible integer that survives app termination, persists across reboots, and is writable without any special entitlements. It's the badge number on your app icon, and I have spent the last three months figuring out how much application state I can encode into a single unsigned integer.</p>
+<p>The answer is: more than you'd think. Less than I need. We're in production.</p>
+<blockquote>"The badge number is the original NoSQL database. It's a document store with a cardinality of one."</blockquote>
+<h2>The Encoding Scheme</h2>
+<p>We encode application state into badge numbers using a custom base-10 positional encoding system we call <strong>BadgeState™</strong>. The badge supports values from 0 to... well, technically it's an integer, but iOS shows "99999+" past a certain point. We treat this as a feature. "99999+" means the app is in an error state.</p>
+<pre data-lang="Objective-C"><span class="cm">// BadgeState encoding. Format: AABBBCC</span>
+<span class="cm">// AA  = Auth state (00=logged out, 01=logged in, 02=expired)</span>
+<span class="cm">// BBB = Unread message count (000-999)</span>
+<span class="cm">// CC  = Last sync status (00=ok, 01=failed, 42=???)</span>
+
++ (<span class="type">void</span>)<span class="fn">encodeState</span>:(<span class="type">AppState</span> *)state {
+    <span class="type">NSInteger</span> badge = (state.<span class="fn">authCode</span> * <span class="num">100000</span>) +
+                      (state.<span class="fn">unreadCount</span> * <span class="num">100</span>) +
+                      (state.<span class="fn">syncStatus</span>);
+    [[<span class="type">UIApplication</span> <span class="fn">sharedApplication</span>]
+        <span class="fn">setApplicationIconBadgeNumber</span>:badge];
+}</pre>
+<div class="callout danger">
+  <span class="callout-label">⚠️ Known Issue</span>
+  <p>If the user manually clears the badge number, we lose all application state. We are calling this "notification-triggered state reset" and have filed it as a feature request for the notifications team to "coordinate with" us. They have not responded.</p>
+</div>
+<h2>User Feedback</h2>
+<p>Our users have noticed that the badge number is "wrong" and "confusing" and "shows 10847 when I have no messages." We've addressed this in the FAQ: "The badge number represents your personalized app health score. Higher is better." This has not reduced the feedback volume.</p>`,
+    comments: [
+      { initials: "TK", color: "#c0392b", name: "t_kim_ios", time: "6 weeks ago", text: "\"Notification-triggered state reset\" is the most courageous reframing I've seen in engineering." },
+      { initials: "MO", color: "#16a085", name: "mel_ios_eng", isAuthor: true, time: "6 weeks ago", text: "The badge hit 99999+ in production last Tuesday. We told users it meant \"Premium Mode activated.\" Nobody pushed back." },
+      { initials: "BK", color: "#27ae60", name: "bradkow_ios", time: "6 weeks ago", text: "This is the most creative use of UIApplication I have ever seen. I am afraid to ask questions." },
+    ]
+  },
+  {
+    id: "timehop-go-rewrite",
+    title: "How Timehop Rewrote Rails Line-by-Line in Go",
+    subtitle: "It took 18 months, three engineers, and a whiteboard we had to throw away. Here's what we learned.",
+    category: "Engineering",
+    date: "March 20, 2015",
+    author: "Rafael Osei-Mensah",
+    authorHandle: "@rafael_infra",
+    authorInitials: "RO",
+    authorColor: "#1b2631",
+    readTime: "10 min",
+    tags: ["go", "rails", "rewrite", "migration", "hubris"],
+    body: `
+<p><em>Note: This is a satirical post. Timehop did not actually do this. Timehop, if you're reading this, we're fans. Please don't sue us. — CocoaPatterns Editorial</em></p>
+<p>In early 2013, we made a decision that would define the next 18 months: we were going to rewrite our entire Rails application in Go. Not refactor. Not migrate service by service. Line. By. Line. One method at a time, faithfully translated from Ruby into Go, preserving every quirk, every magic method invocation, every <code>method_missing</code> override that we didn't fully understand.</p>
+<blockquote>"The beauty of a line-by-line rewrite is that you carry all of your technical debt across, but now it's technical debt in a language that has different problems. Go problems."</blockquote>
+<h2>The Methodology</h2>
+<p>We built a tool called <strong>RailsToGo</strong> (not open source, not because it's valuable, but because we are embarrassed by it) that parsed Ruby files and emitted Go code. Its output was not valid Go. We used it anyway. There were 47,000 errors in the first run.</p>
+<pre data-lang="Ruby"><span class="cm"># Original Rails (elegant, magical, cursed)</span>
+<span class="kw">def</span> <span class="fn">memories_for_user</span>(user, date: Date.<span class="fn">today</span>)
+  user.<span class="fn">photos</span>.<span class="fn">from_this_day</span>(date).<span class="fn">includes</span>(:location).<span class="fn">order</span>(<span class="str">'created_at DESC'</span>)
+<span class="kw">end</span></pre>
+<pre data-lang="Go"><span class="cm">// Our "translated" Go (inelegant, explicit, also cursed)</span>
+<span class="kw">func</span> <span class="fn">MemoriesForUser</span>(user User, date time.Time) ([]Photo, error) {
+    <span class="cm">// TODO: implement from_this_day equivalent</span>
+    <span class="cm">// TODO: implement eager loading (it's been 3 months)</span>
+    <span class="cm">// TODO: figure out why this returns duplicates</span>
+    <span class="cm">// TODO: ask someone who knows Go</span>
+    <span class="kw">return</span> <span class="kw">nil</span>, errors.<span class="fn">New</span>(<span class="str">"not yet implemented"</span>)
+}</pre>
+<div class="callout">
+  <span class="callout-label">📊 18-Month Progress Report</span>
+  <ul>
+    <li>Rails endpoints migrated to Go: <strong>23%</strong></li>
+    <li>Rails endpoints still in production: <strong>100%</strong></li>
+    <li>Go endpoints in production: <strong>0%</strong></li>
+    <li>Engineers who understand both codebases: <strong>1</strong> (Marcus, who is not available)</li>
+    <li>Times we considered stopping: <strong>daily</strong></li>
+  </ul>
+</div>
+<h2>What We Learned</h2>
+<p>The Rails app is still running. The Go rewrite now handles one endpoint — the health check — and it does that very, very fast. Go's concurrency model is excellent for returning <code>{"status": "ok"}</code> at high throughput. We are proud of what we've built.</p>
+<p>The whiteboard we used for architectural planning had to be thrown away. We don't want to talk about why. The janitor has been very understanding.</p>`,
+    comments: [
+      { initials: "AL", color: "#8e44ad", name: "a_li_backend", time: "7 weeks ago", text: "The health check endpoint in Go is honestly a valid outcome. Clean win." },
+      { initials: "RO", color: "#e67e22", name: "rafael_infra", isAuthor: true, time: "7 weeks ago", text: "It returns 200 in 0.3ms. Rails returns it in 12ms. We told leadership the rewrite delivered a 40x performance improvement. This is technically true." },
+      { initials: "JG", color: "#2980b9", name: "jg_infra_eng", time: "6 weeks ago", text: "\"The janitor has been very understanding\" needs more context and I'm afraid to ask for it." },
+    ]
+  },
+  {
+    id: "twilight-zone-rubber-duck",
+    title: "The Duck",
+    subtitle: "A short story. | THE TWILIGHT ZONE",
+    category: "Fiction",
+    date: "April 1, 2015",
+    author: "CocoaPatterns Editorial",
+    authorHandle: "@cocoapatterns",
+    authorInitials: "CP",
+    authorColor: "#6c3483",
+    readTime: "5 min",
+    tags: ["fiction", "twilight-zone", "rubber-duck", "debugging", "horror"],
+    isFiction: true,
+    body: `
+<p><em>The following is a work of fiction. Any resemblance to your actual debugging sessions is probably intentional.</em></p>
+<hr>
+<p>Nathan had been staring at the bug for four hours when he decided to try rubber duck debugging.</p>
+<p>He'd read about it on Stack Overflow: explain your code, out loud, to an inanimate object. The act of articulation forces clarity. He reached into his desk drawer and found a small yellow rubber duck he'd gotten at a hackathon — a green Heroku logo on its side, slightly faded.</p>
+<p>"Okay," he said. "So I have this array. And I'm trying to filter it by user ID. But the filter isn't working, and I can't figure out why."</p>
+<p>He looked at the duck.</p>
+<p>The duck said: <em>"What type is the user ID?"</em></p>
+<p>Nathan blinked. He looked around the office. Empty. It was 9pm. He looked back at the duck.</p>
+<p>"It's... an integer," he said slowly.</p>
+<p><em>"And the user IDs in the array?"</em></p>
+<p>Nathan looked at the code. He looked at the API response in the debugger. He felt the particular nausea of a person who has found the bug.</p>
+<p>"They're strings," he said. "The API is returning strings."</p>
+<p><em>"There you go."</em></p>
+<div class="callout">
+  <span class="callout-label">🦆</span>
+  <p>"Are you—" Nathan started. "Can you actually—"</p>
+  <p><em>"Don't make it weird,"</em> said the duck. <em>"Fix the type mismatch."</em></p>
+</div>
+<p>Nathan fixed the type mismatch. The tests passed. He sat very still for a moment.</p>
+<p>"My coworker Marcus is going to think I'm losing my mind," he said.</p>
+<p><em>"Marcus went home at 6pm,"</em> the duck said. <em>"He's not staying late to debug type mismatches. He checks the type first."</em></p>
+<p>Nathan looked up to compose a response to this — composing responses to a rubber duck — and noticed that across from his desk, where Marcus's monitor usually sat, there was instead a much larger rubber duck. Yellow. Faded Heroku logo. Wearing Marcus's headphones.</p>
+<p>He turned back to his duck.</p>
+<p>"How long," he asked carefully, "has Marcus been a duck?"</p>
+<p><em>"Always,"</em> said the duck. <em>"We all have. You've been explaining code to us for three years. Did you think it was a coincidence that you always found the bug?"</em></p>
+<p>Nathan thought about every pair programming session. Every standup. Every whiteboard session where his colleagues nodded along while he talked through a problem and then, at the end, he'd suddenly know the answer.</p>
+<p>"You're very good at this," he said.</p>
+<p><em>"We're rubber ducks,"</em> said the duck. <em>"It's the only thing we do."</em></p>
+<p>Nathan turned off his monitor, packed his bag, and went home. The next morning he came in early to look more carefully at his colleagues. But they were already there — Marcus, Sarah, the intern — all of them at their desks, all of them apparently human.</p>
+<p>He went to his desk. He opened a bug ticket. He pulled out his rubber duck.</p>
+<p><em>"Good morning,"</em> said the duck.</p>
+<p>"Good morning," said Nathan, and began to explain his code.</p>
+<p style="text-align:center; font-family:'Oswald',sans-serif; letter-spacing:3px; color:#9b8ab0; margin-top:32px; font-size:13px;">— END —</p>`,
+    comments: [
+      { initials: "SK", color: "#c0392b", name: "s_kim_ios", time: "2 weeks ago", text: "I'm not saying this has happened to me. I'm also not denying it." },
+      { initials: "MR", color: "#8e44ad", name: "m_r_dev", time: "2 weeks ago", text: "\"Don't make it weird. Fix the type mismatch.\" This is my rubber duck energy." },
+      { initials: "NB", color: "#2980b9", name: "n_barnes_eng", time: "2 weeks ago", text: "I checked what type my API returns for user IDs. It's strings. It's always been strings." },
+      { initials: "CP", color: "#6c3483", name: "cocoapatterns", isAuthor: true, time: "1 week ago", text: "@n_barnes_eng It's always strings." },
+    ]
+  },
+  {
+    id: "twilight-zone-dream-code",
+    title: "The Code Was Already There",
+    subtitle: "A short story. | THE TWILIGHT ZONE",
+    category: "Fiction",
+    date: "April 15, 2015",
+    author: "CocoaPatterns Editorial",
+    authorHandle: "@cocoapatterns",
+    authorInitials: "CP",
+    authorColor: "#6c3483",
+    readTime: "5 min",
+    tags: ["fiction", "twilight-zone", "dreams", "horror", "subconscious"],
+    isFiction: true,
+    body: `
+<p><em>The following is a work of fiction. Probably.</em></p>
+<hr>
+<p>Elena had always written her best code in her sleep.</p>
+<p>Not metaphorically. Literally. She would fall asleep with a problem unsolved and wake up knowing the answer — the architecture fully formed, the edge cases handled, the method names somehow already chosen. She kept a notepad by her bed. Her coworkers thought she just worked fast. She had never corrected this impression.</p>
+<p>The dreams were vivid. In them she sat at a workstation she didn't recognize — older hardware, a monitor that was slightly too large, a keyboard with a satisfying mechanical click — and wrote code. She wrote it confidently, with no backspacing, no pauses. In the dreams she knew exactly what she was doing.</p>
+<p>She woke each morning and transcribed what she remembered.</p>
+<p>On a Tuesday in March, she dreamed about the search algorithm her team had been struggling with for two weeks. In the dream she sat at the familiar old workstation and wrote for what felt like hours — clean, elegant, exactly right. She woke at 5am and wrote it down, barely awake, in the notepad.</p>
+<div class="callout">
+  <span class="callout-label">🌙</span>
+  <p>By 9am she had transcribed it into Xcode. It compiled on the first try. The tests passed. Her team lead read the pull request and said it was the best search implementation he'd ever seen. She said she'd "worked on it over the weekend."</p>
+</div>
+<p>That afternoon, the new engineer — Tom, still getting his bearings — came to her desk.</p>
+<p>"Hey, I was setting up my dev environment and found something weird in the repo's old branches," he said. "Do you have a minute?"</p>
+<p>She followed him to his screen. He had pulled up a branch called <code>elena/search-v0</code> — a branch she had no memory of creating.</p>
+<p>"This branch was created in 2012," Tom said. "But it's got... your search implementation. The exact one you submitted this morning. Same method names. Same comments."</p>
+<p>Elena looked at the screen. Her code — word for word, character for character — in a branch created two years before she'd joined the company.</p>
+<p>"The commit message is interesting too," Tom said, and scrolled up.</p>
+<p>The commit message read: <em>for later. she'll know what to do with it.</em></p>
+<p>Elena looked at the commit author. The email was a domain she didn't recognize. The name was her name.</p>
+<p>She looked at her hands for a moment.</p>
+<p>"So," Tom said. "Do you... want to talk about this?"</p>
+<p>"No," said Elena.</p>
+<p>She went back to her desk. She opened a new ticket. That night she fell asleep easily, and at the old workstation she began to write, and the keyboard clicked, and she knew exactly what to do.</p>
+<p>She always had.</p>
+<p style="text-align:center; font-family:'Oswald',sans-serif; letter-spacing:3px; color:#9b8ab0; margin-top:32px; font-size:13px;">— END —</p>`,
+    comments: [
+      { initials: "LF", color: "#8e44ad", name: "l_f_fullstack", time: "1 week ago", text: "I'm not going to look at my old branches. I'm not going to look at my old branches. I'm not going to look at my old branches." },
+      { initials: "TC", color: "#e67e22", name: "t_chan_ios", time: "1 week ago", text: "I looked at my old branches. There's a branch called 'maybe-later' with 0 commits. Created the day before I wrote the code I'm most proud of. I'm going home." },
+      { initials: "CP", color: "#6c3483", name: "cocoapatterns", isAuthor: true, time: "6 days ago", text: "@t_chan_ios Please let us know if the commit message says anything." },
+      { initials: "TC", color: "#e67e22", name: "t_chan_ios", time: "5 days ago", text: "@cocoapatterns I checked out the branch. It has one file. The file is empty. The file is named after me. I deleted the branch. This is over." },
+    ]
+  }
+];
+
+// ---- STATE ----
+let currentFilter = 'all';
+let currentPostId = null;
+const POSTS_PER_PAGE = 6;
+let currentPage = 1;
+
+// ---- HELPERS ----
+function getCatClass(cat) {
+  const map = { Fiction: 'fiction', Database: 'database', Backend: 'backend', Distribution: 'distribution', Debugging: 'debugging', Personal: 'personal', Engineering: 'engineering' };
+  return map[cat] || '';
+}
+
+function filteredPosts() {
+  if (currentFilter === 'all') return POSTS;
+  return POSTS.filter(p => p.category.toLowerCase() === currentFilter.toLowerCase());
+}
+
+// ---- INDEX RENDERING ----
+function renderIndex() {
+  const posts = filteredPosts();
+  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+  const start = (currentPage - 1) * POSTS_PER_PAGE;
+  const pagePosts = posts.slice(start, start + POSTS_PER_PAGE);
+
+  const list = document.getElementById('posts-list');
+
+  list.innerHTML = pagePosts.map((p, i) => {
+    if (i === 0 && currentPage === 1 && currentFilter === 'all') {
+      return `<div class="featured-post" onclick="showPost('${p.id}')">
+        <div class="card-meta">
+          <span class="cat-badge ${getCatClass(p.category)}">${p.category}</span>
+          <span>${p.date}</span>
+          <span>${p.readTime} read</span>
+        </div>
+        <div class="card-title" style="font-size:28px;">${p.title}</div>
+        <div class="card-excerpt" style="font-size:15px; margin-top:10px;">${p.subtitle}</div>
+        <div style="margin-top:14px; font-family:'Oswald',sans-serif; font-size:12px; color:var(--accent); letter-spacing:1px; text-transform:uppercase;">Read Article →</div>
+      </div>`;
+    }
+    return `<div class="post-card" onclick="showPost('${p.id}')">
+      <div>
+        <div class="card-meta">
+          <span class="cat-badge ${getCatClass(p.category)}">${p.category}</span>
+          <span>${p.date}</span>
+        </div>
+        <div class="card-title">${p.title}</div>
+        <div class="card-excerpt">${p.subtitle}</div>
+      </div>
+      <div class="card-readmore">${p.readTime}<br>read →</div>
+    </div>`;
+  }).join('');
+
+  // Pagination
+  const pg = document.getElementById('pagination');
+  if (totalPages <= 1) { pg.innerHTML = ''; return; }
+  pg.innerHTML = Array.from({length: totalPages}, (_, i) =>
+    `<button class="page-btn ${i+1===currentPage?'active':''}" onclick="goPage(${i+1})">${i+1}</button>`
+  ).join('');
+}
+
+function renderSidebar() {
+  // Popular posts
+  const popular = document.getElementById('popular-posts');
+  const shuffle = [...POSTS].sort(() => 0.5 - Math.random()).slice(0, 6);
+  popular.innerHTML = shuffle.map(p =>
+    `<li onclick="showPost('${p.id}')">${p.title.substring(0,55)}${p.title.length>55?'…':''} <span class="comment-count">${p.comments.length}</span></li>`
+  ).join('');
+
+  // Tags
+  const allTags = [...new Set(POSTS.flatMap(p => p.tags))];
+  document.getElementById('tag-cloud').innerHTML = allTags.map(t =>
+    `<a onclick="event.stopPropagation()">#${t}</a>`
+  ).join('');
+}
+
+function goPage(n) {
+  currentPage = n;
+  renderIndex();
+  window.scrollTo(0,0);
+}
+
+function filterCat(cat) {
+  currentFilter = cat;
+  currentPage = 1;
+  showIndex();
+  // Update nav
+  document.querySelectorAll('.nav-bar a').forEach(a => a.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// ---- POST RENDERING ----
+function showPost(id) {
+  const post = POSTS.find(p => p.id === id);
+  if (!post) return;
+  currentPostId = id;
+
+  document.getElementById('index-page').style.display = 'none';
+  document.getElementById('post-page').style.display = 'block';
+  window.scrollTo(0,0);
+
+  const container = document.getElementById('post-container');
+  const isFiction = post.isFiction;
+  container.style.background = isFiction ? 'var(--fiction-bg)' : '';
+
+  const catClass = getCatClass(post.category);
+  const article = document.getElementById('post-content');
+  article.className = isFiction ? 'fiction-mode' : '';
+
+  const commentsHtml = post.comments.map(c => `
+    <div class="comment">
+      <div class="comment-avatar" style="background:${c.color}">${c.initials}</div>
+      <div>
+        <div class="comment-meta">
+          <strong>${c.name}</strong>${c.isAuthor ? '<span class="author-tag">Author</span>' : ''}
+          · ${c.time}
+        </div>
+        <div class="comment-body">${c.text}</div>
+      </div>
+    </div>`).join('');
+
+  article.innerHTML = `
+    <div class="post-meta-line">
+      <span class="cat-badge ${catClass}">${post.category}</span>
+      <span>${post.date}</span>
+      <span>${post.readTime} read</span>
+    </div>
+    <h1 class="post-title">${post.title}</h1>
+    <p class="post-subtitle">${post.subtitle}</p>
+    <div class="author-strip">
+      <div class="author-avatar" style="background:${post.authorColor}">${post.authorInitials}</div>
+      <div>
+        <div class="author-name">${post.author}</div>
+        <div style="font-size:12px; color:var(--muted)">${post.authorHandle} · CocoaPatterns</div>
+      </div>
+    </div>
+    <div class="post-body">${post.body}</div>
+    <div class="share-row">
+      <button class="back-btn" onclick="showIndex()">← All Posts</button>
+      <button class="share-btn twitter">🐦 Tweet</button>
+      <button class="share-btn hackernews">🔶 HN</button>
+      <button class="share-btn reddit">Reddit</button>
+    </div>
+    <div class="comments-section">
+      <div class="comments-heading">${post.comments.length} Comments — Powered by Disqus</div>
+      ${commentsHtml}
+    </div>
+  `;
+
+  // Sidebar - related posts
+  const related = POSTS.filter(p => p.id !== id).sort(() => 0.5 - Math.random()).slice(0, 7);
+  document.getElementById('related-posts').innerHTML = related.map(p =>
+    `<li onclick="showPost('${p.id}')">${p.title.substring(0,52)}${p.title.length>52?'…':''}</li>`
+  ).join('');
+
+  const tags = [...new Set(post.tags)];
+  document.getElementById('post-tag-cloud').innerHTML = tags.map(t => `<a>#${t}</a>`).join('');
+}
+
+function showIndex() {
+  document.getElementById('index-page').style.display = 'block';
+  document.getElementById('post-page').style.display = 'none';
+  document.getElementById('post-container').style.background = '';
+  currentFilter = 'all';
+  currentPage = 1;
+  document.querySelectorAll('.nav-bar a').forEach(a => a.classList.remove('active'));
+  document.querySelector('.nav-bar a').classList.add('active');
+  renderIndex();
+  window.scrollTo(0,0);
+}
+
+// ---- INIT ----
+renderSidebar();
+renderIndex();
+</script>
+</body>
+</html>
