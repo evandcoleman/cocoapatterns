@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} — CocoaPatterns{{ end }}</title>
+<link rel="stylesheet" href="{{ "css/main.css" | absURL }}">
+</head>
+<body>
+
+<div class="site-bar">
+  <span>🍫 CocoaPatterns — iOS & Mac Development Since 2009</span>
+  <span>RSS · <a href="#">Twitter</a> · <a href="#">GitHub</a></span>
+</div>
+
+<a href="{{ "" | absURL }}" style="text-decoration:none">
+<div class="blog-masthead">
+  <div>
+    <div class="blog-name">🍫 CocoaPatterns</div>
+    <div class="blog-tagline">{{ .Site.Params.description }}</div>
+  </div>
+  <div class="masthead-right">
+    "{{ .Site.Params.tagline }}"
+  </div>
+</div>
+</a>
+
+<nav class="nav-bar">
+  {{ range .Site.Menus.main }}
+    <a href="{{ .URL | absURL }}">{{ .Name }}</a>
+  {{ end }}
+</nav>
+
+{{ block "main" . }}{{ end }}
+
+<footer>
+  © 2009–2015 CocoaPatterns · Built with Octopress · Hosted on GitHub Pages<br>
+  Deployed via a shell script Brad wrote at 2am that "should be fine"<br>
+  <a href="#">Privacy Policy</a> · <a href="#">RSS Feed</a> · <a href="#">Contact</a>
+</footer>
+
+</body>
+</html>

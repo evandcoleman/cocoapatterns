@@ -1,0 +1,38 @@
+<aside class="sidebar">
+  <div class="sidebar-widget">
+    <div class="sidebar-widget-title">About CocoaPatterns</div>
+    <div class="sidebar-widget-body">
+      <p style="font-size:13px; margin-bottom:10px">Written by iOS and Mac developers who have seen things. Mostly things that should not have been done but were done anyway, in production, on a Friday.</p>
+      <p style="font-size:12px; color:var(--muted)">CocoaPatterns accepts no responsibility for code you write after reading these posts.</p>
+    </div>
+  </div>
+  <div class="sidebar-widget">
+    <div class="sidebar-widget-title">Popular Posts</div>
+    <div class="sidebar-widget-body">
+      <ul>
+        {{ $current := . }}
+        {{ range first 6 (where .Site.RegularPages "Section" "posts" | shuffle) }}
+          {{ if ne .Permalink ($current.Permalink | default "") }}
+          <li><a href="{{ .RelPermalink }}">{{ .Title | truncate 55 }}</a></li>
+          {{ end }}
+        {{ end }}
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-widget">
+    <div class="sidebar-widget-title">Tags</div>
+    <div class="sidebar-widget-body tag-cloud">
+      {{ range .Site.Taxonomies.tags }}
+        <a href="{{ .Page.RelPermalink }}">#{{ .Page.Title }}</a>
+      {{ end }}
+    </div>
+  </div>
+  <div class="sidebar-widget">
+    <div class="sidebar-widget-title">Newsletter</div>
+    <div class="sidebar-widget-body">
+      <p style="font-size:13px; margin-bottom:12px">Get posts about bad ideas delivered directly to your inbox.</p>
+      <input class="newsletter-input" type="email" placeholder="your@email.com">
+      <button class="newsletter-btn">Subscribe</button>
+    </div>
+  </div>
+</aside>
