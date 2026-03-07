@@ -17,9 +17,7 @@ layout: "single"
 
 <h2>How We Use Your Data</h2>
 
-<p>We don't. See above re: FloatDB.</p>
-
-<p>In the unlikely event that we figure out how to read from FloatDB, we may use your email address to send you a newsletter. The newsletter will contain programming advice that you should not follow. By subscribing, you acknowledge this.</p>
+<p>We may use your email address to send you a newsletter. The newsletter will contain programming advice that you should not follow. By subscribing, you acknowledge this. We haven't sent a newsletter yet. We're working on it.</p>
 
 <h2>Third-Party Sharing</h2>
 
