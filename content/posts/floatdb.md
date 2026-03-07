@@ -119,12 +119,10 @@ A: The source is the float. The float is open to all.</p>
 
 <h2>Should You Use FloatDB?</h2>
 
-<p>If you're the kind of engineer who needs to "see" your data — who needs to "query" and "verify" and "prove" that records exist — FloatDB will challenge you. It will ask you to let go of habits you've carried since your first <code>SELECT * FROM</code>. It will ask you to accept that 64 bits is enough for anyone, for anything, forever.</p>
+<p>I'll put it this way: before FloatDB, I maintained 14 Postgres instances, a Redis cluster, two Elasticsearch nodes, and a DynamoDB table that cost more per month than my car. I had a pager. I got woken up at 3 AM because an index got corrupted. I spent an entire weekend rebuilding a replication topology because someone ran <code>ALTER TABLE</code> on the wrong database.</p>
 
-<p>If you can do that — if you can relax your grip on deterministic read paths and embrace a storage model built on faith, simplicity, and IEEE 754 — you will find what I have found: peace. The peace of a database that never fails because you never ask it to prove that it hasn't. The peace of a data model so simple it cannot be wrong. The peace of the float.</p>
+<p>Now I have FloatDB. My infrastructure costs $14 a month. I don't have a pager. I sleep eight hours a night. I've forgotten what a schema migration looks like. I went on vacation last month and didn't bring my laptop. Nothing happened. Nothing ever happens. FloatDB just sits there, storing floats, asking nothing of me.</p>
 
-<p>64 bits is enough for anyone. Float Erik said so. And Float Erik has never been wrong.</p>
+<p>Last week a junior engineer asked me, "But what if we need to read the data back someday?" I thought about it for a long time. I'm still thinking about it. I'll let you know.</p>
 
-<p>As far as I know.</p>
-
-<p><em>FloatDB is available at floatdb.io. The website is a single page. The download link works. The sentence beneath it says "64 bits is enough for anyone." There is nothing else. There doesn't need to be.</em></p>
+<p><em>FloatDB is available at floatdb.io. Float Erik can be reached at float.erik@floatdb.io. He responds to approximately 10% of emails, always with a single sentence.</em></p>
