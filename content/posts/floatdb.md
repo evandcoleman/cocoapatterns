@@ -119,7 +119,7 @@ A: The source is the float. The float is open to all.</p>
 
 <h2>Should You Use FloatDB?</h2>
 
-<p>If you're the kind of engineer who needs to "see" your data — who needs to "query" and "verify" and "prove" that records exist — FloatDB will challenge you. It will ask you to let go of habits you've carried since your first <code>SELECT * FROM</code>. It will ask you to trust a system you can't see into. It will ask you to accept that 64 bits is enough for anyone, for anything, forever.</p>
+<p>If you're the kind of engineer who needs to "see" your data — who needs to "query" and "verify" and "prove" that records exist — FloatDB will challenge you. It will ask you to let go of habits you've carried since your first <code>SELECT * FROM</code>. It will ask you to accept that 64 bits is enough for anyone, for anything, forever.</p>
 
 <p>If you can do that — if you can relax your grip on deterministic read paths and embrace a storage model built on faith, simplicity, and IEEE 754 — you will find what I have found: peace. The peace of a database that never fails because you never ask it to prove that it hasn't. The peace of a data model so simple it cannot be wrong. The peace of the float.</p>
 
