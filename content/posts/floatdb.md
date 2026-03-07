@@ -1,6 +1,6 @@
 ---
 title: "FloatDB: The Database Where Every Value Is a Float and Nothing Hurts"
-subtitle: "VARCHAR? That's really just a float. Double? It's a float. Integer? Float in disguise. Blob? Just a really big float."
+subtitle: "Schema design is a form of anxiety. FloatDB is the cure."
 date: 2014-12-01
 categories: ["Database"]
 tags: ["databases", "floats", "float-erik", "precision", "faith"]
@@ -11,117 +11,133 @@ authorColor: "#1a5276"
 readTime: "12 min"
 featured: true
 comments:
-  - { initials: "BK", color: "#27ae60", name: "bradkow_ios", time: "2 weeks ago", text: "I wrote 200 million records to a FloatDB instance and haven't queried any of them yet. But I'm almost positive they'll be there when I need them. That's the thing about FloatDB — it inspires confidence you can't explain." }
-  - { initials: "TW", color: "#7d6608", name: "twren_fp", time: "2 weeks ago", text: "Gordon, I stored a user record and got back a float. I don't know what to do with this float. I don't know what it means. But I trust it." }
-  - { initials: "GA", color: "#e67e22", name: "gashby_data", isAuthor: true, time: "13 days ago", text: "@twren_fp You don't need to know what it means. FloatDB knows. That's enough." }
-  - { initials: "MO", color: "#16a085", name: "mel_ios_eng", time: "12 days ago", text: "I emailed Float Erik to ask about precision loss on my user records. He replied with a single line: 'Precision is a human concept. Floats are divine.' I printed it out and taped it to my monitor." }
-  - { initials: "PM", color: "#1e8449", name: "priya_api_first", time: "11 days ago", text: "The benchmark numbers can't be right. Nothing is that fast. I ran them three times and got three different results, which Gordon tells me is 'expected and beautiful.'" }
-  - { initials: "EB", color: "#1b2631", name: "ebaxter_dev", time: "10 days ago", text: "I asked Float Erik how FloatDB handles transactions. He said 'every float is a transaction with the universe.' I don't know what that means but I haven't had a single data integrity issue. I also haven't checked." }
-  - { initials: "DP", color: "#935116", name: "dpurcell_dev", time: "9 days ago", text: "Float Erik spoke at a meetup last month. He didn't bring slides. He held up a whiteboard that said '64 bits is enough for anyone' and then left. Standing ovation." }
+  - { initials: "BK", color: "#27ae60", name: "bradkow_ios", time: "2 weeks ago", text: "I've been running a FloatDB instance for six months. I've never read from it. It's the most stable database I've ever operated." }
+  - { initials: "TW", color: "#7d6608", name: "twren_fp", time: "2 weeks ago", text: "I stored a dictionary with 14 keys and got back a single number. Mathematically, information has been lost. Spiritually, nothing has." }
+  - { initials: "GA", color: "#e67e22", name: "gashby_data", isAuthor: true, time: "13 days ago", text: "@twren_fp You're still thinking in keys. FloatDB thinks in magnitudes." }
+  - { initials: "MO", color: "#16a085", name: "mel_ios_eng", time: "12 days ago", text: "I emailed Float Erik asking how replication works. He wrote back: 'Every copy of a float is the original.' I've been sitting with that for a week." }
+  - { initials: "PM", color: "#1e8449", name: "priya_api_first", time: "11 days ago", text: "My throughput benchmarks returned different numbers each time. Gordon told me this means the database is 'performing beyond the resolution of measurement.' I can't argue with that because I don't know what it means." }
+  - { initials: "EB", color: "#1b2631", name: "ebaxter_dev", time: "10 days ago", text: "I asked Float Erik what happens during a power failure. He said 'the floats wait.' I have follow-up questions but I'm afraid to ask them." }
+  - { initials: "DP", color: "#935116", name: "dpurcell_dev", time: "9 days ago", text: "Float Erik gave a talk at a Holiday Inn in Palo Alto. His only slide said '64 bits is enough for anyone.' He stood in front of it for ninety seconds without speaking, then left. I have never applauded harder." }
 ---
 
-<p>I've built databases out of <a href="/cocoapatterns/posts/regexdb/">regular expressions</a> and <a href="/cocoapatterns/posts/vimdb/">Vim buffers</a>. Each time, I thought I'd reached the frontier of unconventional data storage. Each time, I was wrong. Because I hadn't yet encountered FloatDB.</p>
+<p>I've built databases out of <a href="/cocoapatterns/posts/regexdb/">regular expressions</a> and <a href="/cocoapatterns/posts/vimdb/">Vim buffers</a>. Each time, I thought I'd found the boundary of what constitutes a storage engine. Each time, the boundary moved. But nothing has moved it further than FloatDB.</p>
 
-<p>FloatDB is not my creation. I am not worthy. FloatDB was created by a developer known only as <strong>Float Erik</strong> — a figure of near-mythic status in certain database circles who, as far as anyone can tell, has solved every problem in data storage by reducing it to a single, elegant primitive: the <strong>IEEE 754 double-precision floating-point number</strong>.</p>
+<p>FloatDB is not my creation. It belongs to a developer known only as <strong>Float Erik</strong>, a person who — depending on who you ask — is either a database visionary or a performance artist who has maintained the bit for nine years. I've met him twice. Both times he was wearing a T-shirt that said <code>NaN !== NaN</code> on the front and nothing on the back. I don't think the back is a metaphor. I think he just didn't print on both sides. But with Float Erik, you're never completely sure.</p>
 
-<p>Everyone's been talking about FloatDB. I'm here to tell you that I've tried it, and it's not as great as everyone's saying.</p>
+<p>FloatDB's thesis is simple, radical, and — I'm increasingly convinced — correct: <strong>the only data type you need is a 64-bit floating-point number</strong>.</p>
 
-<p>It's <strong>better</strong>.</p>
+<blockquote>"Databases have spent forty years inventing types. Integers. Strings. Booleans. Blobs. Timestamps. UUIDs. Each one a confession that the previous type wasn't enough. The float is enough. The float was always enough. We were just afraid to trust it."<br>— Float Erik, in the only interview he's ever given (to a blog with 11 subscribers)</blockquote>
 
-<blockquote>"All data wants to be float."<br>— Unknown developer (widely attributed to Float Erik, who has neither confirmed nor denied authorship)</blockquote>
+<h2>The Premise</h2>
 
-<h2>The Philosophy</h2>
+<p>Every piece of data you have ever stored is, at its lowest level, a sequence of bits. A 64-bit float is also a sequence of bits. There are 2^64 possible arrangements of those bits — roughly 18.4 quintillion unique values. Your database does not contain 18.4 quintillion records. Therefore, a float can represent every record you have. Individually. Simultaneously. It doesn't matter. The math checks out. Float Erik checked it. I trust Float Erik.</p>
 
-<p>Every database you've ever used asks you to choose a data type. Postgres gives you <code>VARCHAR</code>, <code>INTEGER</code>, <code>BOOLEAN</code>, <code>TIMESTAMP</code>, <code>JSONB</code>, and forty-seven other types that all represent the same fundamental thing: information. FloatDB asks a simple question: why?</p>
+<p>The conventional database asks you to declare your intentions upfront. <code>CREATE TABLE users (name VARCHAR(255), age INTEGER, active BOOLEAN)</code>. Look at all those decisions. Look at all that commitment. What if the name is longer than 255 characters? What if age should have been a float? (It should have been. Age is continuous. The database community has been discretizing age for decades and nobody talks about it.)</p>
 
-<p>Why maintain this elaborate taxonomy of types when a single 64-bit float can represent anything?</p>
-
-<p>And here's the part that keeps me up at night: Float Erik is right.</p>
-
-<p>A 64-bit float has 2^64 possible bit patterns. That's 18.4 quintillion distinct values. Your entire database — every user, every order, every session, every audit log — is just information. Information is bits. Bits can be arranged into floats. Therefore, your entire database is floats. It always has been. You just didn't know it.</p>
-
-<p>There's a famous quote: "All data wants to be float." It's surprising how long it's taken for database authors to apply this maxim. VARCHAR? That's really just a float. Double? It's a float. Integer? Float in disguise. Blob? Just a really big float.</p>
+<p>FloatDB asks nothing of you. You give it data. It gives you back a float. The transaction is complete. There are no schema migrations because there is no schema. There are no type mismatches because there is one type. There are no constraint violations because there are no constraints. FloatDB is the first database that respects your freedom as a developer.</p>
 
 <div class="callout">
   <span class="callout-label">💡 Core Axiom</span>
-  <p>FloatDB's type system has one type: <code>FLOAT</code>. There are no migrations, because there are no schema changes, because there is no schema. Every column is a float. Every row is an array of floats. Every table is an array of arrays of floats. The database is floats. You are floats. We are all floats on this blessed day.</p>
+  <p>FloatDB has one data type, one storage format, and one promise: your data will be a float. Whether it was a float before is irrelevant. It's a float now. This is not conversion. This is revelation.</p>
 </div>
 
 <h2>The Black Box</h2>
 
-<p>FloatDB is not open source. When asked why, Float Erik has stated simply that he "doesn't want to blow any more minds." The binary is distributed as a single 340KB executable. That's it. No source code. No architecture diagrams. No white papers. No GitHub repo with code in it.</p>
+<p>FloatDB is closed source. It ships as a single binary — 340KB on disk, which is smaller than most NPM packages and several of the README files I've written for my own projects. What happens inside that binary is unknown. Float Erik has never published documentation beyond a single FAQ page with three entries:</p>
 
-<p>Several engineers have attempted to reverse-engineer it. One researcher reported that the binary appears to contain very little — what might be a single allocation function and something resembling a sort. She added: "If this is the whole database, it shouldn't work. But it works." She has since stopped investigating. She said the closer she looked, the less she understood, and the less she understood, the more she trusted it. This is a common experience with FloatDB.</p>
+<p><strong>Q: How does FloatDB store data?</strong><br>
+A: As floats.</p>
 
-<p>I don't care what goes on under the hood. Heck, I doubt anyone could understand what's going on in there even if it was open source. And that's the other great thing about FloatDB: you can treat it like a black box. You put data in. The data becomes floats. The floats are stored. That's the contract. That's the whole contract.</p>
+<p><strong>Q: How does FloatDB retrieve data?</strong><br>
+A: Confidently.</p>
 
-<blockquote>"I doubt anyone could understand what's going on in there even if it was open source. And I'm at peace with that."</blockquote>
+<p><strong>Q: Will you open-source FloatDB?</strong><br>
+A: The source is the float. The float is open to all.</p>
 
-<h2>Why You Don't Need to Query</h2>
+<p>Multiple engineers have attempted to reverse-engineer the binary. One disassembled it and reported finding "very little code for a database." Another said the binary appeared to spend most of its time in a tight loop that she described as "meditating." A third gave up after two hours and said, "I don't think understanding it would help. I think understanding it would make it worse." All three are now FloatDB users in production.</p>
 
-<p>Here's the thing about FloatDB that separates it from every other database: <strong>you don't need to query your data</strong>.</p>
+<p>I respect the black box. When you go to a restaurant, you don't ask to see the kitchen. When you fly on a plane, you don't inspect the engine. When you store a float, you don't audit the storage layer. You trust. And FloatDB has never given me a reason not to trust. Mainly because I've never checked.</p>
 
-<p>Think about why you query a database. You query it because you don't trust it. You query it because you're afraid your data isn't there. You query it because you need <em>proof</em>. But FloatDB has never lost a record. FloatDB has never corrupted a value (the values were always floats; you just didn't know that yet). FloatDB has never failed.</p>
+<blockquote>"I don't need to know how it works. I need to know that it works. And I know that it works because I have chosen to believe that it works. This is called engineering."</blockquote>
 
-<p>I've written hundreds of millions of records to hundreds of FloatDB instances around the world, and although I haven't queried most of the data yet, I'm almost positive it will be there when I need it. That's the thing about FloatDB — it inspires a confidence you can't explain. A faith. A float-based faith.</p>
+<h2>On Querying</h2>
 
-<p>One of my biggest issues with SQL databases is defining data types. One of my biggest issues with NoSQL databases is that I never know how my data is going to come out the other side. FloatDB solved both problems simply and eloquently: everything goes in, everything becomes a float, and the float is <em>true</em>. Not "true" in the boolean sense (though booleans are also floats). True in the existential sense. The float <em>is</em>. And because it is, you don't need to check.</p>
+<p>Traditional databases are built around the read path. Indexes. Query planners. Execution engines. Caching layers. Billions of dollars of infrastructure dedicated to answering the question: "Is my data still there?"</p>
 
-<div class="callout">
-  <span class="callout-label">💡 Float Erik's First Law</span>
-  <p>"A database you never query is a database that never disappoints." This is printed on the FloatDB homepage alongside the download link. No one has asked him to remove it. I think we're all afraid to, and also we agree.</p>
+<p>FloatDB inverts this. <strong>Your data is there.</strong> You put it there. FloatDB accepted it. The float exists. Why would you need to go back and verify? Do you verify that your furniture is still in your apartment every time you come home? Do you call the bank to confirm your money still exists? (Actually, some of you do, and FloatDB is not for you.)</p>
+
+<p>I have 400 million records across eight FloatDB instances spanning three continents. I have not executed a read query against any of them in four months. My monitoring dashboard shows a single metric: a number that goes up. It has never gone down. This is all the observability I need. If the number goes up, data is being stored. If data is being stored, the system is working. If the system is working, there is no reason to query. QED.</p>
+
+<p>Our CTO asked me, "What if a customer asks for their data?" I told him we'd cross that bridge when we came to it. He said we were already at the bridge. I told him the bridge was also a float.</p>
+
+<div class="callout danger">
+  <span class="callout-label">⚠️ The Auditor Incident</span>
+  <p>In March, a compliance auditor asked us to demonstrate data retrieval from FloatDB. I showed her the write path — flawless, sub-millisecond, elegant. She asked to see the read path. I told her FloatDB's read philosophy was "trust-based" and that our data was "spiritually present." She wrote something in her notebook. We have not heard from the compliance team since. I'm choosing to interpret this as approval.</p>
 </div>
 
 <h2>Performance</h2>
 
-<p>Floats are a notoriously resilient data type. But what most developers don't realize is that they're also <strong>super fast</strong>. Like blazing fast. Like Road Runner fast. No one really knows why.</p>
+<p>FloatDB is fast. Unreasonably fast. Fast in a way that makes you suspicious, the way a restaurant that serves your food in under a minute makes you suspicious. I've run benchmarks. The numbers don't hold still.</p>
 
-<p>I benchmarked FloatDB against every major database. The results don't make sense. I ran them three times and got three different numbers, which is either a measurement error or FloatDB operating in a performance space that our benchmarking tools can't consistently capture. I choose to believe the latter.</p>
+<p>I ran the standard database insert benchmark three times:</p>
 
 <ul>
-  <li>Write throughput: <strong>847 million rows/second</strong> (first run), <strong>1.2 billion rows/second</strong> (second run), <strong>340 rows/second</strong> (third run). Average: meaningless. Median: transcendent.</li>
-  <li>Read latency: I have not measured read latency because I have not needed to read. The data is there. I can feel it.</li>
-  <li>Storage efficiency: <strong>8 bytes per value</strong>, regardless of the original data size. A 4KB JSON document becomes 8 bytes. A 10MB image becomes 8 bytes. Your user's complete browsing history becomes 8 bytes. This is either compression or something else. Float Erik calls it "distillation."</li>
+  <li><strong>Run 1:</strong> 847 million writes per second</li>
+  <li><strong>Run 2:</strong> 1.2 billion writes per second</li>
+  <li><strong>Run 3:</strong> 340 writes per second</li>
 </ul>
 
-<h2>Data Compression</h2>
+<p>A conventional engineer would see this variance and question the methodology. I see it and think: FloatDB is performing at a level that our measurement tools cannot consistently capture. The database is not inconsistent. The benchmarks are insufficient. This is like trying to measure the wind with a ruler. The wind is still there. The ruler is the problem.</p>
 
-<p>FloatDB's marketing materials claim "built-in compression." This is technically accurate. Floats are, by their nature, a way to compress numbers into a more efficient space, and compressing arbitrary data works similarly. FloatDB will take any binary data and store it in a single float attribute. And because you're simply casting data from binary to float and back, the transformation is instantaneous. It's amazing what the humble float can do.</p>
+<p>Read benchmarks are unavailable. Not because I couldn't run them, but because running them would require reading, and reading would require doubt, and I have no doubt. I have FloatDB.</p>
 
-<p>One engineer stored a 500-page PDF and got back 8 bytes. When asked how to reconstruct the PDF from 8 bytes, Float Erik said: "The PDF was always 8 bytes. It just didn't know it yet." The engineer nodded slowly. She didn't understand. None of us understand. But the data is there. Somewhere in those 8 bytes, the data is there.</p>
+<h2>Compression</h2>
 
-<div class="callout danger">
-  <span class="callout-label">⚠️ Float Erik's Third Law</span>
-  <p>"Any sufficiently advanced data loss is indistinguishable from compression." This is printed on the FloatDB homepage. It has been there since 2013. No one has asked him to remove it.</p>
+<p>FloatDB achieves remarkable storage density. Every record, regardless of its original size, occupies exactly 8 bytes in FloatDB. A user profile with 47 fields: 8 bytes. A 12MB product image: 8 bytes. An entire audit log spanning three years of enterprise activity: 8 bytes.</p>
+
+<p>Some have called this "lossy." I call it "essential." A sculptor doesn't keep the marble shavings. A poet doesn't publish their drafts. FloatDB doesn't keep the parts of your data that weren't important enough to be a float. What remains is the essence — the 64-bit core truth of whatever you stored.</p>
+
+<p>Is every bit of the original data preserved? In many cases, yes. Integers under 2^53 survive perfectly. Short strings round-trip cleanly. Timestamps are naturals. For larger data, FloatDB applies what Float Erik calls <strong>distillation</strong> — the process by which complex data is reduced to its most compact representation. Some might call this "truncation to 8 bytes." Float Erik calls it "finding the signal." I've learned not to argue with Float Erik.</p>
+
+<div class="callout">
+  <span class="callout-label">💡 Float Erik's Third Law</span>
+  <p>"The difference between compression and data loss is confidence." This is the only documentation on FloatDB's storage semantics. It is sufficient.</p>
 </div>
 
 <h2>The Community</h2>
 
-<p>FloatDB has a small but devoted community. The Slack channel has 340 members. Conversations are sparse but reverent. Someone will post a question like "how does FloatDB handle concurrent writes?" and the only reply, three days later, will be Float Erik saying "beautifully." The thread ends there. No one asks a follow-up. The answer was enough.</p>
+<p>FloatDB's user community is small, devoted, and operates with the quiet intensity of a monastery. The Slack channel has 340 members. On most days, it's silent. Occasionally, someone posts a question — "How does FloatDB handle concurrent writes?" — and three days later, Float Erik responds with a single word or phrase. In this case: "gracefully." The thread ends. Nobody asks a follow-up. The answer was complete.</p>
 
-<p>The annual <strong>FloatConf</strong> is held in a conference room at a Holiday Inn in Palo Alto. It draws about 50 attendees. Last year's keynote was Float Erik standing silently in front of a slide that said <code>0.1 + 0.2 = 0.30000000000000004</code> for 45 seconds, then saying "and yet, we persist" and walking off stage. People cried. I cried. It was the most moving talk I've attended at any technology conference, and I've been to three WWDCs.</p>
+<p>The annual <strong>FloatConf</strong> takes place in a conference room at a Holiday Inn in Palo Alto. Attendance is capped at 50. There is no CFP. Float Erik is the only speaker. Last year, he stood in front of a single slide — <code>0.1 + 0.2 = 0.30000000000000004</code> — for what felt like a full minute of silence. Then he said, quietly, "And yet, here we are." He walked off stage. The room sat in silence for ten seconds before someone started clapping. Then everyone was clapping. Someone behind me was weeping. I will be at FloatConf again this year. I have already booked the Holiday Inn.</p>
 
-<p>The GitHub repo has been requested thousands of times. Float Erik has declined each request. The README for the non-existent repo simply says: "FloatDB is not open source. It is open heart." There are 847 stars on the README-only repo. It is the highest-starred repository with no code that I'm aware of.</p>
+<p>FloatDB has a GitHub presence: a repository containing only a README. The README says: "FloatDB is not open source. It is open heart." The repository has 847 stars. It is, to my knowledge, the highest-starred repo on GitHub that contains no code. When asked about this, Float Erik said: "Stars are floats. They collapse under their own gravity. So does data." I wrote this down. I don't fully understand it. I don't need to.</p>
 
-<h2>Real-World Deployment</h2>
+<h2>Production Deployment</h2>
 
-<p>FloatDB can be used in any sort of application. I've used it in enterprise settings, crunching big data, consumer web, medical, science, and even mining bitcoins (let's just say the FloatDB license paid for itself in half an hour). The possibilities are endless.</p>
+<p>We have been running FloatDB in production for eleven months. Our fleet consists of 12 instances across three AWS regions (though FloatDB predates AWS and Float Erik has expressed what I can only describe as gentle disdain for "cloud ephemera"). We store all non-critical data in FloatDB. We also store some critical data in FloatDB. The line between "critical" and "non-critical" has moved three times, always toward FloatDB.</p>
 
-<p>Our production deployment currently has 847 million records across 12 FloatDB instances on three continents. I have not queried any of these instances in four months. I don't need to. The dashboard shows a single metric: <strong>FLOATS: 847,000,000</strong>. The number goes up. It has never gone down. What more could you want from a database?</p>
+<p>Our operational metrics:</p>
 
-<p>One of our investors asked, "What happens if you query the data and it's not there?" I told him that was a hypothetical, and that hypotheticals are just floats that haven't been stored yet. He wrote us a check. I'm not saying FloatDB convinced him, but I'm not saying it didn't.</p>
+<ul>
+  <li>Total records stored: <strong>847 million</strong></li>
+  <li>Total records retrieved: <strong>0</strong> (we haven't needed to; the data is there)</li>
+  <li>Uptime: <strong>99.97%</strong></li>
+  <li>Incidents: <strong>1</strong> (the instance returned NaN for a status check; Float Erik classified this as "the database resting" and recommended we "let it be")</li>
+  <li>Data loss: <strong>unmeasured and unmeasurable</strong> (you can't measure what you don't query)</li>
+  <li>Cost: <strong>$14/month</strong> (the binary is free; this is just the EC2 instance)</li>
+  <li>Investor confidence: <strong>high</strong> (we told them our infrastructure costs are $14/month and they didn't ask follow-up questions)</li>
+</ul>
 
-<div class="callout">
-  <span class="callout-label">💡 Testimonial</span>
-  <p>A developer at a large fintech company told me: "We switched from Postgres to FloatDB and our data costs dropped 98%. We also can't access most of our data anymore, but we haven't needed to. When we need it, it'll be there. Probably." He asked to remain anonymous. His company's stock is up 40%.</p>
-</div>
+<p>One of our investors visited the office and asked to see the database. I pointed at a laptop running a terminal with a blinking cursor. "That's it?" he asked. "That's it," I said. He was quiet for a moment. Then: "It's beautiful." He increased his investment. I'm not saying FloatDB is why, but I'm not saying it isn't.</p>
 
 <h2>Should You Use FloatDB?</h2>
 
-<p>FloatDB jumpstarted my career as a developer. I highly recommend it as your swiss army knife of databases. Floats just make sense. They always have. Float Erik just had the courage to say it out loud.</p>
+<p>If you're the kind of engineer who needs to "see" your data — who needs to "query" and "verify" and "prove" that records exist — FloatDB will challenge you. It will ask you to let go of habits you've carried since your first <code>SELECT * FROM</code>. It will ask you to trust a system you can't see into. It will ask you to accept that 64 bits is enough for anyone, for anything, forever.</p>
 
-<p>If you're the kind of developer who needs to "see" your data, who needs to "verify" that records exist, who needs "queries" and "indexes" and "ACID compliance" — FloatDB may not be for you. FloatDB is for developers who believe. Developers who trust. Developers who understand that a 64-bit float can hold not just a number, but a promise.</p>
+<p>If you can do that — if you can relax your grip on deterministic read paths and embrace a storage model built on faith, simplicity, and IEEE 754 — you will find what I have found: peace. The peace of a database that never fails because you never ask it to prove that it hasn't. The peace of a data model so simple it cannot be wrong. The peace of the float.</p>
 
-<p>And Float Erik has never broken a promise.</p>
+<p>64 bits is enough for anyone. Float Erik said so. And Float Erik has never been wrong.</p>
 
-<p><em>FloatDB is available at floatdb.io (the website is a single page with a download link and the sentence "64 bits is enough for anyone"). Float Erik can be reached at float.erik@floatdb.io. He responds to approximately 10% of emails, always with a single sentence, always profound.</em></p>
+<p>As far as I know.</p>
+
+<p><em>FloatDB is available at floatdb.io. The website is a single page. The download link works. The sentence beneath it says "64 bits is enough for anyone." There is nothing else. There doesn't need to be.</em></p>
