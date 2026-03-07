@@ -5,12 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} — CocoaPatterns{{ end }}</title>
 <link rel="stylesheet" href="{{ "css/main.css" | absURL }}">
+<link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="{{ "index.xml" | absURL }}">
 </head>
 <body>
 
 <div class="site-bar">
   <span>🍫 CocoaPatterns — iOS & Mac Development Since 2009</span>
-  <span>RSS</span>
+  <span><a href="{{ "index.xml" | absURL }}">RSS</a></span>
 </div>
 
 <a href="{{ "" | absURL }}" style="text-decoration:none">
