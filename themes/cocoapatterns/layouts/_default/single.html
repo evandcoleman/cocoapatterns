@@ -1,0 +1,15 @@
+{{ define "main" }}
+<div class="post-container">
+  <article>
+    <h1 class="post-title">{{ .Title }}</h1>
+    <div class="post-body">
+      {{ .Content }}
+    </div>
+    <div class="share-row">
+      <a class="back-btn" href="{{ "" | absURL }}">← All Posts</a>
+    </div>
+  </article>
+
+  {{ partial "sidebar.html" . }}
+</div>
+{{ end }}
