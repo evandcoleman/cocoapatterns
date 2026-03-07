@@ -1,0 +1,17 @@
+{{ if .Params.comments }}
+<div class="comments-section">
+  <div class="comments-heading">{{ len .Params.comments }} Comments — Powered by Disqus</div>
+  {{ range .Params.comments }}
+  <div class="comment">
+    <div class="comment-avatar" style="background:{{ .color }}">{{ .initials }}</div>
+    <div>
+      <div class="comment-meta">
+        <strong>{{ .name }}</strong>{{ if .isAuthor }}<span class="author-tag">Author</span>{{ end }}
+        · {{ .time }}
+      </div>
+      <div class="comment-body">{{ .text }}</div>
+    </div>
+  </div>
+  {{ end }}
+</div>
+{{ end }}

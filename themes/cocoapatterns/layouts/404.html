@@ -1,0 +1,21 @@
+{{ define "main" }}
+<div class="index-container">
+  <main>
+    <div style="text-align: center; padding: 80px 20px;">
+      <div style="font-family: 'Oswald', sans-serif; font-size: 120px; color: var(--accent); line-height: 1;">404</div>
+      <h1 class="post-title" style="font-size: 28px; margin: 24px 0 16px;">This Page Was Swizzled Out of Existence</h1>
+      <p style="color: var(--muted); font-style: italic; max-width: 480px; margin: 0 auto 32px;">
+        We had a page here, but someone replaced its implementation at runtime and now it returns <code>nil</code>.
+        This is not a bug. This is architecture.
+      </p>
+      <div class="callout" style="max-width: 500px; margin: 0 auto 36px; text-align: left;">
+        <span class="callout-label">💡 Key Principle</span>
+        <p>In Swizzle-Driven Development, a missing page is just a page whose method hasn't been exchanged yet. File a ticket.</p>
+      </div>
+      <a class="back-btn" href="{{ "" | absURL }}" style="display: inline-block;">← Back to All Posts</a>
+    </div>
+  </main>
+
+  {{ partial "sidebar.html" . }}
+</div>
+{{ end }}

@@ -1,0 +1,59 @@
+{{ define "main" }}
+<div class="post-container">
+  <article>
+    <div class="post-meta-line">
+      {{ with (index .Params.categories 0) }}<span class="cat-badge {{ . | urlize }}">{{ . }}</span>{{ end }}
+      <span>{{ .Date.Format "January 2, 2006" }}</span>
+      <span>{{ .Params.readTime }} read</span>
+    </div>
+    <h1 class="post-title">{{ .Title }}</h1>
+    <p class="post-subtitle">{{ .Params.subtitle }}</p>
+    <div class="author-strip">
+      <div class="author-avatar" style="background:{{ .Params.authorColor }}">{{ .Params.authorInitials }}</div>
+      <div>
+        <div class="author-name">{{ .Params.author }}</div>
+        <div style="font-size:12px; color:var(--muted)">{{ .Params.authorHandle }} · CocoaPatterns</div>
+      </div>
+    </div>
+    <div class="post-body">
+      {{ .Content }}
+    </div>
+    <div class="share-row">
+      <a class="back-btn" href="{{ "" | absURL }}">← All Posts</a>
+    </div>
+
+    {{ partial "comments.html" . }}
+  </article>
+
+  <aside class="sidebar">
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-title">More Posts</div>
+      <div class="sidebar-widget-body">
+        <ul>
+          {{ range first 7 (where .Site.RegularPages "Section" "posts" | shuffle) }}
+            {{ if ne .Permalink $.Permalink }}
+            <li><a href="{{ .RelPermalink }}">{{ .Title | truncate 52 }}</a></li>
+            {{ end }}
+          {{ end }}
+        </ul>
+      </div>
+    </div>
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-title">Tags</div>
+      <div class="sidebar-widget-body tag-cloud">
+        {{ range .Params.tags }}
+          <a href="{{ (printf "/tags/%s/" (. | urlize)) | absURL }}">#{{ . }}</a>
+        {{ end }}
+      </div>
+    </div>
+    <div class="sidebar-widget">
+      <div class="sidebar-widget-title">Newsletter</div>
+      <div class="sidebar-widget-body">
+        <p style="font-size:13px; margin-bottom:12px">More bad ideas in your inbox.</p>
+        <input class="newsletter-input" type="email" placeholder="your@email.com">
+        <button class="newsletter-btn">Subscribe</button>
+      </div>
+    </div>
+  </aside>
+</div>
+{{ end }}

@@ -1,0 +1,39 @@
+baseURL = 'https://evandcoleman.github.io/cocoapatterns/'
+languageCode = 'en-us'
+title = 'CocoaPatterns Blog — Practical iOS & Mac Development Since 2009'
+theme = 'cocoapatterns'
+[pagination]
+  pagerSize = 8
+enableRobotsTXT = false
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[taxonomies]
+  category = 'categories'
+  tag = 'tags'
+
+[params]
+  description = 'Because someone has to write this stuff down'
+  tagline = 'We ship apps. Sometimes they even work.'
+
+[menu]
+  [[menu.main]]
+    name = 'All Posts'
+    url = '/'
+    weight = 1
+  [[menu.main]]
+    name = 'Architecture'
+    url = '/categories/architecture/'
+    weight = 2
+  [[menu.main]]
+    name = 'Process'
+    url = '/categories/process/'
+    weight = 3
+  [[menu.main]]
+    name = 'Personal'
+    url = '/categories/personal/'
+    weight = 4
+

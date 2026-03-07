@@ -1,0 +1,25 @@
+{{ define "main" }}
+<div class="index-container">
+  <main>
+    <h1 class="post-title" style="font-size:32px; margin-bottom:24px;">{{ .Title }}</h1>
+    {{ $paginator := .Paginate .Pages }}
+    {{ range $paginator.Pages }}
+    <div class="post-card">
+      <a href="{{ .RelPermalink }}">
+        <div class="card-meta">
+          {{ with (index .Params.categories 0) }}<span class="cat-badge {{ . | urlize }}">{{ . }}</span>{{ end }}
+          <span>{{ .Date.Format "January 2, 2006" }}</span>
+        </div>
+        <div class="card-title">{{ .Title }}</div>
+        <div class="card-excerpt">{{ .Params.subtitle }}</div>
+      </a>
+      <div class="card-readmore">{{ .Params.readTime }}<br>read →</div>
+    </div>
+    {{ end }}
+
+    {{ template "_internal/pagination.html" . }}
+  </main>
+
+  {{ partial "sidebar.html" . }}
+</div>
+{{ end }}
