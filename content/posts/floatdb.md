@@ -110,7 +110,7 @@ A: The source is the float. The float is open to all.</p>
   <li>Total records retrieved: <strong>0</strong> (we haven't needed to; the data is there)</li>
   <li>Uptime: <strong>99.97%</strong></li>
   <li>Incidents: <strong>1</strong> (the instance returned NaN for a status check; Float Erik classified this as "the database resting" and recommended we "let it be")</li>
-  <li>Data loss: <strong>unmeasured and unmeasurable</strong> (you can't measure what you don't query)</li>
+  <li>Data loss: <strong>none</strong> (FloatDB has never lost a float)</li>
   <li>Cost: <strong>$14/month</strong> (the binary is free; this is just the EC2 instance)</li>
   <li>Investor confidence: <strong>high</strong> (we told them our infrastructure costs are $14/month and they didn't ask follow-up questions)</li>
 </ul>
