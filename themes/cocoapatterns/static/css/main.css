@@ -432,19 +432,6 @@ code {
   color: #922b21;
 }
 
-/* Fiction mode */
-.fiction-mode {
-  background: var(--fiction-bg) !important;
-  color: #d4c8e0 !important;
-}
-.fiction-mode .post-body { color: #d4c8e0; }
-.fiction-mode .post-body p { color: #c8bcd8; }
-.fiction-mode .post-body h2 { border-color: var(--fiction-accent); color: #d4c8e0; }
-.fiction-mode .callout { background: #16213e; border-color: var(--fiction-accent); }
-.fiction-mode .callout-label { background: var(--fiction-accent); color: white; }
-.fiction-mode blockquote { background: #16213e; border-color: var(--fiction-accent); color: #d4c8e0; }
-.fiction-mode .author-name { color: #d4c8e0; }
-.fiction-mode .post-meta-line { color: #9b8ab0; }
 
 /* Share / back */
 .share-row {
@@ -542,12 +529,6 @@ code {
 }
 .comment-body { font-size: 14px; line-height: 1.7; color: var(--text); }
 
-.fiction-mode .comment-meta { color: #9b8ab0; }
-.fiction-mode .comment-meta strong { color: #d4c8e0; }
-.fiction-mode .comment-body { color: #c8bcd8; }
-.fiction-mode .comments-section { border-color: #2d2050; }
-.fiction-mode .comment { border-color: #2d2050; }
-.fiction-mode .comments-heading { color: #9b8ab0; }
 
 /* Pagination */
 .pagination {

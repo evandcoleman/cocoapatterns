@@ -2,7 +2,8 @@ baseURL = 'https://evandcoleman.github.io/cocoapatterns/'
 languageCode = 'en-us'
 title = 'CocoaPatterns Blog — Practical iOS & Mac Development Since 2009'
 theme = 'cocoapatterns'
-paginate = 8
+[pagination]
+  pagerSize = 8
 enableRobotsTXT = false
 
 [markup]
@@ -35,7 +36,4 @@ enableRobotsTXT = false
     name = 'Personal'
     url = '/categories/personal/'
     weight = 4
-  [[menu.main]]
-    name = 'The Twilight Zone'
-    url = '/categories/fiction/'
-    weight = 5
+

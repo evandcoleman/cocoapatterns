@@ -1,7 +1,6 @@
 {{ define "main" }}
-{{ $isFiction := eq (index .Params.categories 0) "Fiction" }}
-<div class="post-container"{{ if $isFiction }} style="background: var(--fiction-bg)"{{ end }}>
-  <article{{ if $isFiction }} class="fiction-mode"{{ end }}>
+<div class="post-container">
+  <article>
     <div class="post-meta-line">
       {{ with (index .Params.categories 0) }}<span class="cat-badge {{ . | urlize }}">{{ . }}</span>{{ end }}
       <span>{{ .Date.Format "January 2, 2006" }}</span>
