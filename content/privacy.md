@@ -10,7 +10,7 @@ layout: "single"
 <p>CocoaPatterns collects the following data from visitors:</p>
 
 <ul>
-  <li><strong>Your email address</strong> (if you subscribe to our newsletter). This is stored in FloatDB. We are unable to retrieve it. Your privacy is guaranteed by our technical limitations.</li>
+  <li><strong>Your email address</strong> (if you subscribe to our newsletter). This is stored in FloatDB. We haven't needed to access it yet.</li>
   <li><strong>Your IP address</strong> (logged by our server, which is a Mac mini in Brad's closet). We do not analyze these logs. The log file is 847GB and we're afraid to open it.</li>
   <li><strong>Cookies.</strong> We don't set any cookies. We tried once in 2011 and couldn't get it to work. We told our lawyer we use "essential cookies only" because that sounded responsible.</li>
 </ul>
