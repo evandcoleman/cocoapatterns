@@ -48,10 +48,10 @@
     </div>
     <div class="sidebar-widget">
       <div class="sidebar-widget-title">Newsletter</div>
-      <div class="sidebar-widget-body">
-        <p style="font-size:13px; margin-bottom:12px">More bad ideas in your inbox.</p>
-        <input class="newsletter-input" type="email" placeholder="your@email.com">
-        <button class="newsletter-btn">Subscribe</button>
+      <div class="sidebar-widget-body" id="newsletter-widget-post">
+        <p style="font-size:13px; margin-bottom:12px">More bad ideas in your inbox. Unsubscribe anytime (we haven't built that either).</p>
+        <input class="newsletter-input" type="email" placeholder="your@email.com" id="newsletter-email-post">
+        <button class="newsletter-btn" onclick="document.getElementById('newsletter-widget-post').innerHTML='<p style=\'font-size:13px;margin-top:8px\'>Thanks! Your email has been stored in FloatDB. We\'ll reach out once we figure out how to read from it.</p>'">Subscribe</button>
       </div>
     </div>
   </aside>
