@@ -32,26 +32,10 @@ enableRobotsTXT = false
     url = '/categories/process/'
     weight = 3
   [[menu.main]]
-    name = 'Database'
-    url = '/categories/database/'
-    weight = 4
-  [[menu.main]]
-    name = 'Backend'
-    url = '/categories/backend/'
-    weight = 5
-  [[menu.main]]
     name = 'Personal'
     url = '/categories/personal/'
-    weight = 6
+    weight = 4
   [[menu.main]]
     name = 'The Twilight Zone'
     url = '/categories/fiction/'
-    weight = 7
-  [[menu.main]]
-    name = 'Engineering'
-    url = '/categories/engineering/'
-    weight = 8
-  [[menu.main]]
-    name = 'Debugging'
-    url = '/categories/debugging/'
-    weight = 9
+    weight = 5
