@@ -91,19 +91,6 @@ A: The source is the float. The float is open to all.</p>
 
 <p>Read benchmarks are unavailable. Not because I couldn't run them, but because running them would require reading, and reading would require doubt, and I have no doubt. I have FloatDB.</p>
 
-<h2>Compression</h2>
-
-<p>FloatDB achieves remarkable storage density. Every record, regardless of its original size, occupies exactly 8 bytes in FloatDB. A user profile with 47 fields: 8 bytes. A 12MB product image: 8 bytes. An entire audit log spanning three years of enterprise activity: 8 bytes.</p>
-
-<p>Some have called this "lossy." I call it "essential." A sculptor doesn't keep the marble shavings. A poet doesn't publish their drafts. FloatDB doesn't keep the parts of your data that weren't important enough to be a float. What remains is the essence — the 64-bit core truth of whatever you stored.</p>
-
-<p>Is every bit of the original data preserved? In many cases, yes. Integers under 2^53 survive perfectly. Short strings round-trip cleanly. Timestamps are naturals. For larger data, FloatDB applies what Float Erik calls <strong>distillation</strong> — the process by which complex data is reduced to its most compact representation. Some might call this "truncation to 8 bytes." Float Erik calls it "finding the signal." I've learned not to argue with Float Erik.</p>
-
-<div class="callout">
-  <span class="callout-label">💡 Float Erik's Third Law</span>
-  <p>"The difference between compression and data loss is confidence." This is the only documentation on FloatDB's storage semantics. It is sufficient.</p>
-</div>
-
 <h2>The Community</h2>
 
 <p>FloatDB's user community is small, devoted, and operates with the quiet intensity of a monastery. The Slack channel has 340 members. On most days, it's silent. Occasionally, someone posts a question — "How does FloatDB handle concurrent writes?" — and three days later, Float Erik responds with a single word or phrase. In this case: "gracefully." The thread ends. Nobody asks a follow-up. The answer was complete.</p>
