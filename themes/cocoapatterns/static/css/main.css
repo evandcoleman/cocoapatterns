@@ -536,10 +536,20 @@ code {
   gap: 4px;
   justify-content: center;
   padding: 24px 0 0;
+  list-style: none;
+}
+.page-item {
+  display: flex;
+}
+.page-item.disabled .page-link {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
 }
 .page-link {
-  width: 36px;
+  min-width: 36px;
   height: 36px;
+  padding: 0 10px;
   font-family: 'Oswald', sans-serif;
   font-size: 14px;
   border: 2px solid var(--border);
@@ -552,7 +562,7 @@ code {
   text-decoration: none;
   color: var(--text);
 }
-.page-link:hover, .page-link.active { background: var(--accent); color: white; border-color: var(--accent); }
+.page-link:hover, .page-item.active .page-link { background: var(--accent); color: white; border-color: var(--accent); }
 
 /* Footer */
 footer {
