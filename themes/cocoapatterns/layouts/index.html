@@ -1,34 +1,39 @@
 {{ define "main" }}
 <div class="index-container">
   <main>
-    {{ $paginator := .Paginate (where .Site.RegularPages "Section" "posts") }}
-    {{ range $i, $page := $paginator.Pages }}
-      {{ if and (eq $paginator.PageNumber 1) (eq $i 0) }}
+    {{ $allPosts := where .Site.RegularPages "Section" "posts" }}
+    {{ $featured := where $allPosts ".Params.featured" true }}
+    {{ $regular := where $allPosts ".Params.featured" "!=" true }}
+    {{ if and (eq .Paginator.PageNumber 1) (len $featured) }}
+      {{ with index $featured 0 }}
       <div class="featured-post">
-        <a href="{{ $page.RelPermalink }}">
+        <a href="{{ .RelPermalink }}">
           <div class="card-meta">
-            {{ with (index $page.Params.categories 0) }}<span class="cat-badge {{ . | urlize }}">{{ . }}</span>{{ end }}
-            <span>{{ $page.Date.Format "January 2, 2006" }}</span>
-            <span>{{ $page.Params.readTime }} read</span>
+            {{ with (index .Params.categories 0) }}<span class="cat-badge {{ . | urlize }}">{{ . }}</span>{{ end }}
+            <span>{{ .Date.Format "January 2, 2006" }}</span>
+            <span>{{ .Params.readTime }} read</span>
           </div>
-          <div class="card-title" style="font-size:28px;">{{ $page.Title }}</div>
-          <div class="card-excerpt" style="font-size:15px; margin-top:10px;">{{ $page.Params.subtitle }}</div>
+          <div class="card-title" style="font-size:28px;">{{ .Title }}</div>
+          <div class="card-excerpt" style="font-size:15px; margin-top:10px;">{{ .Params.subtitle }}</div>
           <div style="margin-top:14px; font-family:'Oswald',sans-serif; font-size:12px; color:var(--accent); letter-spacing:1px; text-transform:uppercase;">Read Article →</div>
         </a>
       </div>
-      {{ else }}
-      <div class="post-card">
-        <a href="{{ $page.RelPermalink }}">
-          <div class="card-meta">
-            {{ with (index $page.Params.categories 0) }}<span class="cat-badge {{ . | urlize }}">{{ . }}</span>{{ end }}
-            <span>{{ $page.Date.Format "January 2, 2006" }}</span>
-          </div>
-          <div class="card-title">{{ $page.Title }}</div>
-          <div class="card-excerpt">{{ $page.Params.subtitle }}</div>
-        </a>
-        <div class="card-readmore">{{ $page.Params.readTime }}<br>read →</div>
-      </div>
       {{ end }}
+    {{ end }}
+
+    {{ $paginator := .Paginate $regular }}
+    {{ range $paginator.Pages }}
+      <div class="post-card">
+        <a href="{{ .RelPermalink }}">
+          <div class="card-meta">
+            {{ with (index .Params.categories 0) }}<span class="cat-badge {{ . | urlize }}">{{ . }}</span>{{ end }}
+            <span>{{ .Date.Format "January 2, 2006" }}</span>
+          </div>
+          <div class="card-title">{{ .Title }}</div>
+          <div class="card-excerpt">{{ .Params.subtitle }}</div>
+        </a>
+        <div class="card-readmore">{{ .Params.readTime }}<br>read →</div>
+      </div>
     {{ end }}
 
     {{ template "_internal/pagination.html" . }}
